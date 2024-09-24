@@ -1,9 +1,15 @@
-import { create } from "../database/reclamos.js";
+import { create, reclamoIdCliente } from "../database/reclamos.js";
 
-const service = (reclamo) => {
+const serviceCreate = (reclamo) => {
 
     return create(reclamo);
-    
+
 }
 
-export {service};
+const serviceReclamoByIdCliente = (idCliente) => {
+
+    return reclamoIdCliente(idCliente)
+
+}
+
+export {serviceCreate, serviceReclamoByIdCliente};

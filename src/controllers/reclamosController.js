@@ -1,4 +1,4 @@
-import { service } from "../service/reclamoService.js";
+import { serviceCreate, serviceReclamoByIdCliente } from "../service/reclamoService.js";
 
 export const createReclamos = async(req, res) => {
 
@@ -40,8 +40,7 @@ export const createReclamos = async(req, res) => {
     }
 
     try {
-        console.log('controller');
-        const reclamoCreado = await service(reclamo)
+        const reclamoCreado = await serviceCreate(reclamo)
         res.status(201).send({
             estado: "OK",
             data: reclamoCreado
@@ -56,3 +55,18 @@ export const createReclamos = async(req, res) => {
         
 }
 
+export const reclamoIdCliente = async(req, res) => {
+
+    const idCliente = req.params.idCliente;
+
+    const datos = await serviceReclamoByIdCliente(idCliente)
+
+    if (datos.length === 0) {
+        return res.status(200).send({
+            message: "No existen datos para e usuario ingresado"
+        })
+    }
+
+    res.send({status: "OK", datos})
+   
+}
