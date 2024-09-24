@@ -1,0 +1,19 @@
+{
+  "name": "tfi-prog3",
+  "version": "1.0.0",
+  "description": "Trabajo Integrador Final - Programacion 3",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "author": "Mendez, Gonzalo - Lombardo, Lautaro - Forissi, Martin - Vergara, Fernando",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.7"
+  },
+  "type": "module"
+}
