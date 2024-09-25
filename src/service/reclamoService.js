@@ -1,4 +1,4 @@
-import { create, reclamoIdCliente } from "../database/reclamos.js";
+import { create, consultaReclamoCliente, updateReclamo } from "../database/reclamos.js";
 
 const serviceCreate = (reclamo) => {
 
@@ -6,10 +6,15 @@ const serviceCreate = (reclamo) => {
 
 }
 
-const serviceReclamoByIdCliente = (idCliente) => {
+const serviceConsultaReclamoCliente = (idCliente) => {
 
-    return reclamoIdCliente(idCliente)
+    return consultaReclamoCliente(idCliente)
 
 }
 
-export {serviceCreate, serviceReclamoByIdCliente};
+const serviceReclamoUpdate = (idCliente, reclamo) => {
+
+    return  updateReclamo(idCliente, reclamo)
+} 
+
+export {serviceCreate, serviceConsultaReclamoCliente, serviceReclamoUpdate};

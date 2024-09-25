@@ -15,7 +15,7 @@ const create = async({usuario, asunto, fecha, estado, tipo}) => {
     return reclamoCreado
 }
 
-const reclamoIdCliente = async(idCliente) => {
+const consultaReclamoCliente = async(idCliente) => {
     const sqlReclamo = `SELECT r.idReclamo AS nro_reclamo, r.asunto AS asunto_reclamo, r.descripcion, r.fechaCreado, 
                         r.fechaFinalizado, r.fechaCancelado, re.descripcion AS estado_reclamo, rt.descripcion AS tipo_reclamo 
                         FROM reclamos AS r INNER JOIN reclamos_estado AS re ON idReclamosEstado = r.idReclamoEstado
@@ -27,4 +27,16 @@ const reclamoIdCliente = async(idCliente) => {
     return reclamoCliente
 }
 
-export {create, reclamoIdCliente};
+const updateReclamo = async(idCliente, {idReclamo, fechaCancelado, estado}) => {
+    const sqlActualizar = `UPDATE reclamos 
+                            SET fechaCancelado = ?, idReclamoEstado = ? 
+                            WHERE idReclamo = ? 
+                            AND idUsuarioCreador = ?
+                            AND idReclamoEstado = 1`
+    
+    const [actualizado] = await conexion.query(sqlActualizar, [fechaCancelado, estado, idReclamo, idCliente])
+    
+    return actualizado
+}
+
+export {create, consultaReclamoCliente, updateReclamo};

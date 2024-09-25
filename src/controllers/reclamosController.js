@@ -1,4 +1,4 @@
-import { serviceCreate, serviceReclamoByIdCliente } from "../service/reclamoService.js";
+import { serviceCreate, serviceConsultaReclamoCliente, serviceReclamoUpdate } from "../service/reclamoService.js";
 
 export const createReclamos = async(req, res) => {
 
@@ -55,11 +55,11 @@ export const createReclamos = async(req, res) => {
         
 }
 
-export const reclamoIdCliente = async(req, res) => {
+export const consultaReclamoCliente = async(req, res) => {
 
     const idCliente = req.params.idCliente;
 
-    const datos = await serviceReclamoByIdCliente(idCliente)
+    const datos = await serviceConsultaReclamoCliente(idCliente)
 
     if (datos.length === 0) {
         return res.status(200).send({
@@ -69,4 +69,59 @@ export const reclamoIdCliente = async(req, res) => {
 
     res.send({status: "OK", datos})
    
+}
+
+export const actualizaReclamoCliente = async(req, res) => {
+
+    const idCliente = req.params.idCliente;
+    const { body } = req;
+    const fechaCancelado = new Date();
+    const estado = 3;
+
+    if (!body.idReclamo) {
+        res
+            .status(404)
+            .send({
+                status: "Fallo",
+                data: {
+                    error: "El parámetro idReclamo no puede ser vacío."
+                }
+            });
+    }
+
+    if (!idCliente) {
+        res
+            .status(404)
+            .send({
+                status: "Fallo",
+                data: {
+                    error: "El parámetro idCliente no puede ser vacío."
+                }
+            });
+    }
+
+    const reclamo = {
+        idReclamo: body.idReclamo,
+        fechaCancelado: fechaCancelado,
+        estado: estado
+    }
+
+    try {
+        
+        const reclamoActualizado = await serviceReclamoUpdate(idCliente, reclamo);
+
+        console.log(reclamoActualizado)
+
+        if (reclamoActualizado.affectedRows === 0) {
+            return res.status(400).send({
+                mensaje: "No se pudo modificar el reclamo"
+            })
+        }
+
+        res.send({ status: "OK", data: reclamoActualizado });
+
+    } catch (error) {
+        res.status(error?.status || 500).send({ status: "Fallo", data: { error: error?.message || error } });
+    }
+
 }
