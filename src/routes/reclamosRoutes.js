@@ -1,10 +1,11 @@
 import express from "express";
 import {
-    createReclamos,
+    createReclamo,
     getReclamoById,
     actualizaReclamoCliente,
     getAllReclamos,
     getReclamosByClientId,
+    deleteReclamoById,
 } from "../controllers/reclamosController.js";
 import { isCliente } from "../middleware/authProfile.js";
 
@@ -14,7 +15,9 @@ router.get("/reclamos", isCliente, getAllReclamos);
 router.get("/reclamos/:idReclamo", isCliente, getReclamoById);
 router.get("/reclamos/cliente/:idCliente", isCliente, getReclamosByClientId);
 
-router.post("/reclamos/:idCliente", isCliente, createReclamos);
+router.delete("/reclamos/:idReclamo", isCliente, deleteReclamoById);
+
+router.post("/reclamos", isCliente, createReclamo);
 
 router.patch("/reclamos/:idCliente", isCliente, actualizaReclamoCliente);
 

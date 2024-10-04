@@ -1,63 +1,11 @@
 import {
-    serviceCreate,
+    serviceCreateReclamo,
     serviceGetReclamoById,
     serviceReclamoUpdate,
     serviceGetAllReclamos,
     serviceGetReclamosByClientId,
+    serviceDeleteReclamoById,
 } from "../service/reclamoService.js";
-
-export const createReclamos = async (req, res) => {
-    const { body } = req;
-    let fecha = new Date();
-    let estado = 1;
-
-    if (!body.usuario) {
-        return res.status(404).send({
-            status: false,
-            message: "Debe ingresar un 'usuario'",
-        });
-    }
-
-    if (!body.asunto || body.asunto === "") {
-        return res.status(404).send({
-            status: false,
-            message: "El campo 'asunto' no se encuentra o esta vacio!",
-        });
-    }
-
-    if (!body.tipo) {
-        return res.status(404).send({
-            status: false,
-            message: "El campo 'tipo' no se encuentra",
-        });
-    }
-
-    if (body.fecha) {
-        fecha = body.fecha;
-    }
-
-    const reclamo = {
-        usuario: body.usuario,
-        asunto: body.asunto,
-        fecha: fecha,
-        estado: estado,
-        tipo: body.tipo,
-    };
-
-    try {
-        const reclamoCreado = await serviceCreate(reclamo);
-        res.status(201).send({
-            estado: "OK",
-            data: reclamoCreado,
-        });
-    } catch (e) {
-        console.log(e);
-        res.status(500).send({
-            status: "FAILED",
-            data: e,
-        });
-    }
-};
 
 export const getAllReclamos = async (req, res) => {
     const data = await serviceGetAllReclamos();
@@ -67,11 +15,10 @@ export const getAllReclamos = async (req, res) => {
 
 export const getReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
-
     const data = await serviceGetReclamoById(idReclamo);
 
     if (data.length === 0) {
-        return res.status(200).send({
+        return res.status(404).send({
             message: "No se encontró el reclamo",
         });
     }
@@ -81,16 +28,75 @@ export const getReclamoById = async (req, res) => {
 
 export const getReclamosByClientId = async (req, res) => {
     const idCliente = req.params.idCliente;
-
     const data = await serviceGetReclamosByClientId(idCliente);
 
     if (data.length === 0) {
         return res.status(200).send({
+            status: "OK",
+            data: [],
             message: "No hay reclamos de este cliente",
         });
     }
 
     res.send({ status: "OK", data });
+};
+
+export const createReclamo = async (req, res) => {
+    const { body } = req;
+    let fecha = new Date();
+
+    if (
+        !body.idUsuarioCreador ||
+        !body.idReclamoTipo ||
+        !body.asunto ||
+        !body.descripcion
+    ) {
+        return res.status(400).send({
+            status: "FAILED",
+            message:
+                "Debe ingresar un 'idUsuarioCreador', 'idReclamoTipo', 'asunto' y 'descripcion'",
+        });
+    }
+    if (body.fecha) {
+        fecha = body.fecha;
+    }
+
+    const reclamo = {
+        idUsuarioCreador: body.idUsuarioCreador,
+        idReclamoTipo: body.idReclamoTipo,
+        asunto: body.asunto,
+        descripcion: body.descripcion,
+        fecha: fecha,
+    };
+
+    try {
+        const reclamoCreado = await serviceCreateReclamo(reclamo);
+        res.status(201).send({
+            status: "OK",
+            data: reclamoCreado,
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({
+            status: "FAILED",
+            message: "Error al crear el reclamo",
+        });
+    }
+};
+
+export const deleteReclamoById = async (req, res) => {
+    const idReclamo = req.params.idReclamo;
+
+    const query = await serviceDeleteReclamoById(idReclamo);
+
+    if (query.affectedRows === 0) {
+        return res.status(200).send({
+            status: "FAILED",
+            message: "El reclamo no existe",
+        });
+    }
+
+    res.send({ status: "OK", message: "Se ha eliminado el reclamo" });
 };
 
 export const actualizaReclamoCliente = async (req, res) => {
