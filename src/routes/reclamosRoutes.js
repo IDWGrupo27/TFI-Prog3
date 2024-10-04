@@ -1,24 +1,24 @@
 import express from "express";
 import {
-    createReclamo,
     getReclamoById,
-    actualizaReclamoCliente,
     getAllReclamos,
     getReclamosByClientId,
+    createReclamo,
     deleteReclamoById,
+    actualizaReclamoCliente,
 } from "../controllers/reclamosController.js";
 import { isCliente } from "../middleware/authProfile.js";
 
 const router = express.Router();
 
-router.get("/reclamos", isCliente, getAllReclamos);
-router.get("/reclamos/:idReclamo", isCliente, getReclamoById);
-router.get("/reclamos/cliente/:idCliente", isCliente, getReclamosByClientId);
+router.get("/", isCliente, getAllReclamos);
+router.get("/:idReclamo", isCliente, getReclamoById);
+router.get("/cliente/:idCliente", isCliente, getReclamosByClientId);
 
-router.delete("/reclamos/:idReclamo", isCliente, deleteReclamoById);
+router.post("/", isCliente, createReclamo);
 
-router.post("/reclamos", isCliente, createReclamo);
+router.delete("/:idReclamo", isCliente, deleteReclamoById);
 
-router.patch("/reclamos/:idCliente", isCliente, actualizaReclamoCliente);
+router.patch("/:idCliente", isCliente, actualizaReclamoCliente);
 
 export default router;

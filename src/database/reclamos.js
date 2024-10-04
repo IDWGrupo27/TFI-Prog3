@@ -10,6 +10,24 @@ const sqlReclamoJoinEstado =
 const sqlReclamoJoinUsuarios =
     "INNER JOIN usuarios ON reclamos.idUsuarioCreador = usuarios.idUsuario";
 
+export const getAllReclamos = async () => {
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios};`;
+    const [reclamos] = await connection.query(sql);
+    return reclamos;
+};
+
+export const getReclamosByClientId = async (idCliente) => {
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} INNER JOIN usuarios ON reclamos.idUsuarioCreador = ?`;
+    const [reclamoCliente] = await connection.query(sql, [idCliente]);
+    return reclamoCliente;
+};
+
+export const getReclamoById = async (idReclamo) => {
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios} WHERE reclamos.idReclamo = ?;`;
+    const [reclamo] = await connection.query(sql, [idReclamo]);
+    return reclamo;
+};
+
 export const createReclamo = async ({
     idUsuarioCreador,
     idReclamoTipo,
@@ -29,24 +47,6 @@ export const createReclamo = async ({
     ]);
 
     return reclamoCreado;
-};
-
-export const getAllReclamos = async () => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios};`;
-    const [reclamos] = await connection.query(sql);
-    return reclamos;
-};
-
-export const getReclamosByClientId = async (idCliente) => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} INNER JOIN usuarios ON reclamos.idUsuarioCreador = ?`;
-    const [reclamoCliente] = await connection.query(sql, [idCliente]);
-    return reclamoCliente;
-};
-
-export const getReclamoById = async (idReclamo) => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios} WHERE reclamos.idReclamo = ?;`;
-    const [reclamo] = await connection.query(sql, [idReclamo]);
-    return reclamo;
 };
 
 export const deleteReclamoById = async (idReclamo) => {
