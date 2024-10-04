@@ -1,20 +1,27 @@
-import { create, consultaReclamoCliente, updateReclamo } from "../database/reclamos.js";
+import {
+    create,
+    getReclamoById,
+    updateReclamo,
+    getAllReclamos,
+    getReclamosByClientId,
+} from "../database/reclamos.js";
 
-const serviceCreate = (reclamo) => {
-
+export const serviceCreate = (reclamo) => {
     return create(reclamo);
+};
 
-}
+export const serviceGetAllReclamos = () => {
+    return getAllReclamos();
+};
 
-const serviceConsultaReclamoCliente = (idCliente) => {
+export const serviceGetReclamoById = (idReclamo) => {
+    return getReclamoById(idReclamo);
+};
 
-    return consultaReclamoCliente(idCliente)
+export const serviceGetReclamosByClientId = (idCliente) => {
+    return getReclamosByClientId(idCliente);
+};
 
-}
-
-const serviceReclamoUpdate = (idCliente, reclamo) => {
-
-    return  updateReclamo(idCliente, reclamo)
-} 
-
-export {serviceCreate, serviceConsultaReclamoCliente, serviceReclamoUpdate};
+export const serviceReclamoUpdate = (idCliente, reclamo) => {
+    return updateReclamo(idCliente, reclamo);
+};

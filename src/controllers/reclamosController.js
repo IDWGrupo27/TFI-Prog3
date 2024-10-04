@@ -1,7 +1,12 @@
-import { serviceCreate, serviceConsultaReclamoCliente, serviceReclamoUpdate } from "../service/reclamoService.js";
+import {
+    serviceCreate,
+    serviceGetReclamoById,
+    serviceReclamoUpdate,
+    serviceGetAllReclamos,
+    serviceGetReclamosByClientId,
+} from "../service/reclamoService.js";
 
-export const createReclamos = async(req, res) => {
-
+export const createReclamos = async (req, res) => {
     const { body } = req;
     let fecha = new Date();
     let estado = 1;
@@ -9,119 +14,134 @@ export const createReclamos = async(req, res) => {
     if (!body.usuario) {
         return res.status(404).send({
             status: false,
-            message: "Debe ingresar un 'usuario'" 
-        })
+            message: "Debe ingresar un 'usuario'",
+        });
     }
 
-    if (!body.asunto || body.asunto === ""){
+    if (!body.asunto || body.asunto === "") {
         return res.status(404).send({
             status: false,
-            message: "El campo 'asunto' no se encuentra o esta vacio!" 
-        })
+            message: "El campo 'asunto' no se encuentra o esta vacio!",
+        });
     }
 
     if (!body.tipo) {
         return res.status(404).send({
             status: false,
-            message: "El campo 'tipo' no se encuentra" 
-        })
+            message: "El campo 'tipo' no se encuentra",
+        });
     }
 
     if (body.fecha) {
-        fecha = body.fecha
+        fecha = body.fecha;
     }
 
     const reclamo = {
         usuario: body.usuario,
         asunto: body.asunto,
-        fecha: fecha, 
+        fecha: fecha,
         estado: estado,
-        tipo: body.tipo
-    }
+        tipo: body.tipo,
+    };
 
     try {
-        const reclamoCreado = await serviceCreate(reclamo)
+        const reclamoCreado = await serviceCreate(reclamo);
         res.status(201).send({
             estado: "OK",
-            data: reclamoCreado
-        })
-    } catch(e) {
-        console.log(e)
+            data: reclamoCreado,
+        });
+    } catch (e) {
+        console.log(e);
         res.status(500).send({
             status: "FAILED",
-            data: e
-        })
+            data: e,
+        });
     }
-        
-}
+};
 
-export const consultaReclamoCliente = async(req, res) => {
+export const getAllReclamos = async (req, res) => {
+    const data = await serviceGetAllReclamos();
 
+    res.send({ status: "OK", data });
+};
+
+export const getReclamoById = async (req, res) => {
+    const idReclamo = req.params.idReclamo;
+
+    const data = await serviceGetReclamoById(idReclamo);
+
+    if (data.length === 0) {
+        return res.status(200).send({
+            message: "No se encontró el reclamo",
+        });
+    }
+
+    res.send({ status: "OK", data });
+};
+
+export const getReclamosByClientId = async (req, res) => {
     const idCliente = req.params.idCliente;
 
-    const datos = await serviceConsultaReclamoCliente(idCliente)
+    const data = await serviceGetReclamosByClientId(idCliente);
 
-    if (datos.length === 0) {
+    if (data.length === 0) {
         return res.status(200).send({
-            message: "No existen datos para e usuario ingresado"
-        })
+            message: "No hay reclamos de este cliente",
+        });
     }
 
-    res.send({status: "OK", datos})
-   
-}
+    res.send({ status: "OK", data });
+};
 
-export const actualizaReclamoCliente = async(req, res) => {
-
+export const actualizaReclamoCliente = async (req, res) => {
     const idCliente = req.params.idCliente;
     const { body } = req;
     const fechaCancelado = new Date();
     const estado = 3;
 
     if (!body.idReclamo) {
-        res
-            .status(404)
-            .send({
-                status: "Fallo",
-                data: {
-                    error: "El parámetro idReclamo no puede ser vacío."
-                }
-            });
+        res.status(404).send({
+            status: "Fallo",
+            data: {
+                error: "El parámetro idReclamo no puede ser vacío.",
+            },
+        });
     }
 
     if (!idCliente) {
-        res
-            .status(404)
-            .send({
-                status: "Fallo",
-                data: {
-                    error: "El parámetro idCliente no puede ser vacío."
-                }
-            });
+        res.status(404).send({
+            status: "Fallo",
+            data: {
+                error: "El parámetro idCliente no puede ser vacío.",
+            },
+        });
     }
 
     const reclamo = {
         idReclamo: body.idReclamo,
         fechaCancelado: fechaCancelado,
-        estado: estado
-    }
+        estado: estado,
+    };
 
     try {
-        
-        const reclamoActualizado = await serviceReclamoUpdate(idCliente, reclamo);
+        const reclamoActualizado = await serviceReclamoUpdate(
+            idCliente,
+            reclamo
+        );
 
-        console.log(reclamoActualizado)
+        console.log(reclamoActualizado);
 
         if (reclamoActualizado.affectedRows === 0) {
             return res.status(400).send({
-                mensaje: "No se pudo modificar el reclamo"
-            })
+                mensaje: "No se pudo modificar el reclamo",
+            });
         }
 
         res.send({ status: "OK", data: reclamoActualizado });
-
     } catch (error) {
-        res.status(error?.status || 500).send({ status: "Fallo", data: { error: error?.message || error } });
+        res.status(error?.status || 500).send({
+            status: "Fallo",
+            data: { error: error?.message || error },
+        });
     }
-
-}
+};

@@ -1,18 +1,21 @@
-import {userFindById}  from "../controllers/userController.js"
+import { userFindById } from "../controllers/userController.js";
 
-export const isCliente = async(req, res, next) => {
+export const isCliente = async (req, res, next) => {
+    /*     const idUser = req.params.idCliente;
 
-    const idUser = req.params.idCliente
-    
-    const [ profile ] = await userFindById(idUser)
+    const [profile] = await userFindById(idUser);
 
-    if (profile.idTipoUsuario === 3) {
+    console.log(profile);
+
+    if (profile.idTipoUsuario === 1) {
         next();
         return;
-    }
+    } */
+
+    next();
+    return;
 
     return res.status(403).send({
-        message: "su perfil no corresponde a un cliente"
-    })
-
-}
+        message: "su perfil no corresponde a un cliente",
+    });
+};
