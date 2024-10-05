@@ -77,6 +77,7 @@ export const loginUsuario = async (req, res) => {
             if (usuario) {
                 const token = jwt.sign(
                     {
+                        idUsuario: usuario.idUsuario,
                         correoElectronico: usuario.correoElectronico,
                         tipo: usuario.tipo,
                     },

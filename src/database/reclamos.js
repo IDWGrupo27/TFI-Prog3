@@ -18,14 +18,14 @@ export const getAllReclamos = async () => {
 
 export const getReclamosByClientId = async (idCliente) => {
     const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} INNER JOIN usuarios ON reclamos.idUsuarioCreador = ?`;
-    const [reclamoCliente] = await connection.query(sql, [idCliente]);
-    return reclamoCliente;
+    const [reclamosCliente] = await connection.query(sql, [idCliente]);
+    return reclamosCliente;
 };
 
 export const getReclamoById = async (idReclamo) => {
     const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios} WHERE reclamos.idReclamo = ?;`;
-    const [reclamo] = await connection.query(sql, [idReclamo]);
-    return reclamo;
+    const [reclamos] = await connection.query(sql, [idReclamo]);
+    return reclamos[0] ? reclamos[0] : null;
 };
 
 export const createReclamo = async ({

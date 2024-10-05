@@ -4,13 +4,23 @@ import {
     createUsuario,
     loginUsuario,
 } from "../database/usuarios.js";
+import { Usuario } from "../model/Usuario.js";
 
-export const serviceGetUsuarioById = (idUsuario) => {
-    return getUsuarioById(idUsuario);
+export const serviceGetUsuarioById = async (idUsuario) => {
+    var data = await getUsuarioById(idUsuario);
+    if (!data) return null;
+    var usuario = new Usuario(data);
+    return usuario;
 };
 
-export const serviceGetAllUsuarios = () => {
-    return getAllUsuarios();
+export const serviceGetAllUsuarios = async () => {
+    /** @type {Usuario[]} */
+    var usuarios = [];
+    var data = await getAllUsuarios();
+    data.forEach((u) => {
+        usuarios.push(new Usuario(u));
+    });
+    return usuarios;
 };
 
 export const serviceCreateUsuario = (usuario) => {

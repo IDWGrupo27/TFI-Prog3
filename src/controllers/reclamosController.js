@@ -8,37 +8,43 @@ import {
 } from "../service/reclamoService.js";
 
 export const getAllReclamos = async (req, res) => {
-    const data = await serviceGetAllReclamos();
+    const reclamos = await serviceGetAllReclamos();
+    res.send({ status: "OK", reclamos });
+};
 
-    res.send({ status: "OK", data });
+export const getReclamosByClientId = async (req, res) => {
+    const idCliente = req.params.idCliente;
+    if (req.isCliente && parseInt(req.idUsuario) !== parseInt(idCliente)) {
+        return res.status(403).send({
+            status: "FAILED",
+            message: "No tenés permiso para ver los reclamos de este cliente",
+        });
+    }
+
+    const reclamos = await serviceGetReclamosByClientId(idCliente);
+
+    if (reclamos.length === 0) {
+        return res.status(200).send({
+            status: "OK",
+            reclamos: [],
+            message: "No hay reclamos de este cliente",
+        });
+    }
+
+    res.send({ status: "OK", reclamos });
 };
 
 export const getReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
-    const data = await serviceGetReclamoById(idReclamo);
+    const reclamo = await serviceGetReclamoById(idReclamo);
 
-    if (data.length === 0) {
+    if (!reclamo) {
         return res.status(404).send({
             message: "No se encontró el reclamo",
         });
     }
 
-    res.send({ status: "OK", data });
-};
-
-export const getReclamosByClientId = async (req, res) => {
-    const idCliente = req.params.idCliente;
-    const data = await serviceGetReclamosByClientId(idCliente);
-
-    if (data.length === 0) {
-        return res.status(200).send({
-            status: "OK",
-            data: [],
-            message: "No hay reclamos de este cliente",
-        });
-    }
-
-    res.send({ status: "OK", data });
+    res.send({ status: "OK", reclamo });
 };
 
 export const createReclamo = async (req, res) => {

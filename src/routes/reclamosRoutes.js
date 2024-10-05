@@ -7,18 +7,16 @@ import {
     deleteReclamoById,
     actualizaReclamoCliente,
 } from "../controllers/reclamosController.js";
-import { isCliente } from "../middleware/authProfile.js";
+import { isCliente, isEmpleado } from "../middleware/authProfile.js";
 
 const router = express.Router();
 
-router.get("/", isCliente, getAllReclamos);
-router.get("/:idReclamo", isCliente, getReclamoById);
+router.get("/", isEmpleado, getAllReclamos);
+router.get("/:idReclamo", isEmpleado, getReclamoById);
 router.get("/cliente/:idCliente", isCliente, getReclamosByClientId);
 
 router.post("/", isCliente, createReclamo);
 
-router.delete("/:idReclamo", isCliente, deleteReclamoById);
-
-router.patch("/:idCliente", isCliente, actualizaReclamoCliente);
+router.delete("/:idReclamo", isEmpleado, deleteReclamoById);
 
 export default router;
