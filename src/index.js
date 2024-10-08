@@ -11,8 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/reclamos", reclamos);
-app.use("/usuarios", usuarios);
+app.use("/api/reclamos", reclamos);
+app.use("/api/usuarios", usuarios);
 
 app.listen(process.env.PUERTO, () => {
     console.log(

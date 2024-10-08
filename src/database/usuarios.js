@@ -1,5 +1,6 @@
 import { connection } from "./connection.js";
 
+// Sentencias que se repiten en varias consultas
 const sqlUsuarioColumns =
     "usuarios.idUsuario, usuarios.nombre, usuarios.apellido, usuarios.correoElectronico, usuarios.activo, usuariostipo.descripcion AS tipo";
 const sqlUsuarioJoinTipo =

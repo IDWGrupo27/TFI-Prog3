@@ -33,7 +33,6 @@ export const serviceGetReclamosByClientId = async (idCliente) => {
 };
 
 export const serviceGetReclamoById = async (idReclamo) => {
-    /** @type {Reclamo} */
     var data = await getReclamoById(idReclamo);
     if (data) {
         var reclamo = new Reclamo(data);

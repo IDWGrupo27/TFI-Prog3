@@ -4,21 +4,20 @@ const verifyToken = (authHeader) => {
     var validated = false;
     var userData = null;
 
-    if (!typeof authHeader === "string" || !authHeader.startsWith("Bearer"))
-        return;
-
-    jwt.verify(
-        authHeader.split(" ")[1],
-        process.env.TOKEN_SECRET,
-        (err, data) => {
-            if (err) {
-                validated = false;
-                return;
+    if (authHeader && authHeader.startsWith("Bearer")) {
+        jwt.verify(
+            authHeader.split(" ")[1],
+            process.env.TOKEN_SECRET,
+            (err, data) => {
+                if (err) {
+                    validated = false;
+                    return;
+                }
+                validated = true;
+                userData = data;
             }
-            validated = true;
-            userData = data;
-        }
-    );
+        );
+    }
 
     return { validated, userData };
 };
