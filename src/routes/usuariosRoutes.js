@@ -5,14 +5,14 @@ import {
     createUsuario,
     loginUsuario,
 } from "../controllers/usuariosController.js";
-import { isCliente } from "../middleware/authProfile.js";
+import { isEmpleado } from "../middleware/authProfile.js";
 
-const router = express.Router();
+const usuarios = express.Router();
 
-router.get("/", isEmpleado, getAllUsuarios);
-router.get("/:idUsuario", isCliente, getUsuario);
+usuarios.get("/", isEmpleado, getAllUsuarios);
+usuarios.get("/:idUsuario", isEmpleado, getUsuario);
 
-router.post("/register", createUsuario);
-router.post("/login", loginUsuario);
+usuarios.post("/register", createUsuario);
+usuarios.post("/login", loginUsuario);
 
-export default router;
+export default usuarios;

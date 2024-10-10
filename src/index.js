@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cliente from "./routes/clienteRoutes.js";
 import empleado from "./routes/empleadoRoutes.js";
+import usuarios from "./routes/usuariosRoutes.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(morgan("dev"));
 
 app.use("/api/cliente", cliente);
 app.use("/api/empleado", empleado);
+app.use("/api/usuarios", usuarios);
 
 app.listen(process.env.PUERTO, () => {
     console.log(
