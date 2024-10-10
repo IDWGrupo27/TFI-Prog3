@@ -1,7 +1,8 @@
+import { Reclamo } from "../model/Reclamo.js";
 import {
     serviceCreateReclamo,
     serviceGetReclamoById,
-    serviceReclamoUpdate,
+    serviceUpdateReclamo,
     serviceGetAllReclamos,
     serviceGetReclamosByClientId,
     serviceDeleteReclamoById,
@@ -145,55 +146,20 @@ export const deleteReclamoById = async (req, res) => {
     });
 };
 
-export const actualizaReclamoCliente = async (req, res) => {
-    const idCliente = req.params.idCliente;
+export const clienteUpdateReclamo = async (req, res) => {
     const { body } = req;
-    const fechaCancelado = new Date();
-    const estado = 3;
+    const idReclamo = body ? parseInt(body.idReclamo) : null;
+    const idCliente = parseInt(req.params.idCliente);
 
-    if (!body.idReclamo) {
+    if (idReclamo && idCliente) {
+        // a terminar
+        const reclamo = new Reclamo(body);
+    } else {
         res.status(404).send({
-            status: "Fallo",
+            status: "FAILED",
             data: {
-                error: "El parámetro idReclamo no puede ser vacío.",
+                error: "El parámetro idCliente es inválido.",
             },
-        });
-    }
-
-    if (!idCliente) {
-        res.status(404).send({
-            status: "Fallo",
-            data: {
-                error: "El parámetro idCliente no puede ser vacío.",
-            },
-        });
-    }
-
-    const reclamo = {
-        idReclamo: body.idReclamo,
-        fechaCancelado: fechaCancelado,
-        estado: estado,
-    };
-
-    try {
-        const reclamoActualizado = await serviceReclamoUpdate(
-            idCliente,
-            reclamo
-        );
-
-        console.log(reclamoActualizado);
-
-        if (reclamoActualizado.affectedRows === 0) {
-            return res.status(400).send({
-                mensaje: "No se pudo modificar el reclamo",
-            });
-        }
-
-        res.send({ status: "OK", data: reclamoActualizado });
-    } catch (error) {
-        res.status(error?.status || 500).send({
-            status: "Fallo",
-            data: { error: error?.message || error },
         });
     }
 };

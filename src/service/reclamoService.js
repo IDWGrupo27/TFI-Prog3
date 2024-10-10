@@ -46,6 +46,6 @@ export const serviceDeleteReclamoById = (idReclamo) => {
     return deleteReclamoById(idReclamo);
 };
 
-export const serviceReclamoUpdate = (idCliente, reclamo) => {
+export const serviceUpdateReclamo = (idCliente, reclamo) => {
     return updateReclamo(idCliente, reclamo);
 };

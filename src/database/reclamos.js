@@ -12,7 +12,7 @@ const sqlReclamoColumns = `r.idReclamo,
   u.Apellido AS apellidoUsuarioCreador, 
   u.correoElectronico AS correoUsuarioCreador, 
   rt.descripcion AS tipoReclamo, 
-  re.descripcion`;
+  re.descripcion AS estadoReclamo`;
 
 const sqlReclamoJoinUsuarios =
     "INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario";

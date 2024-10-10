@@ -1,16 +1,16 @@
 import express from "express";
+const usuarios = express.Router();
+
 import {
     getUsuario,
     getAllUsuarios,
     createUsuario,
     loginUsuario,
 } from "../controllers/usuariosController.js";
-import { isEmpleado } from "../middleware/authProfile.js";
+import { isAdministrador } from "../middleware/authProfile.js";
 
-const usuarios = express.Router();
-
-usuarios.get("/", isEmpleado, getAllUsuarios);
-usuarios.get("/:idUsuario", isEmpleado, getUsuario);
+usuarios.get("/", isAdministrador, getAllUsuarios);
+usuarios.get("/:idUsuario", isAdministrador, getUsuario);
 
 usuarios.post("/register", createUsuario);
 usuarios.post("/login", loginUsuario);
