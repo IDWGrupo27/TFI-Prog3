@@ -6,6 +6,7 @@ import {
     serviceGetReclamosByClientId,
     serviceDeleteReclamoById,
 } from "../service/reclamoService.js";
+import { enviarCorreo } from "../utiles/correoElectronico.js";
 
 export const getAllReclamos = async (req, res) => {
     const reclamos = await serviceGetAllReclamos();
@@ -109,6 +110,7 @@ export const createReclamo = async (req, res) => {
             status: "OK",
             data: reclamoCreado,
         });
+        enviarCorreo(reclamo)
     } catch (e) {
         console.log(e);
         res.status(500).send({
