@@ -12,6 +12,29 @@ export const getAllReclamos = async (req, res) => {
     res.send({ status: "OK", reclamos });
 };
 
+export const getRequesterReclamos = async (req, res) => {
+    if (req.perfil) {
+        const reclamos = await serviceGetReclamosByClientId(
+            parseInt(req.perfil.idUsuario)
+        );
+
+        if (reclamos.length === 0) {
+            return res.status(200).send({
+                status: "OK",
+                reclamos: [],
+                message: "No hay reclamos de este cliente",
+            });
+        }
+
+        res.send({ status: "OK", reclamos });
+    } else {
+        res.status(403).send({
+            status: "FORBIDDEN",
+            message: "Usuario sin perfil",
+        });
+    }
+};
+
 export const getReclamosByClientId = async (req, res) => {
     const idCliente = req.params.idCliente;
     if (req.isCliente && parseInt(req.idUsuario) !== parseInt(idCliente)) {
@@ -36,15 +59,20 @@ export const getReclamosByClientId = async (req, res) => {
 
 export const getReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
-    const reclamo = await serviceGetReclamoById(idReclamo);
 
-    if (!reclamo) {
-        return res.status(404).send({
-            message: "No se encontró el reclamo",
+    if (idReclamo) {
+        const reclamo = await serviceGetReclamoById(idReclamo);
+        if (!reclamo) {
+            return res.status(404).send({
+                message: "No se encontró el reclamo",
+            });
+        }
+        return res.send({ status: "OK", reclamo });
+    } else {
+        return res.status(400).send({
+            message: "Debe ingresar un 'idReclamo'",
         });
     }
-
-    res.send({ status: "OK", reclamo });
 };
 
 export const createReclamo = async (req, res) => {
@@ -93,16 +121,28 @@ export const createReclamo = async (req, res) => {
 export const deleteReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
 
-    const query = await serviceDeleteReclamoById(idReclamo);
+    console.log(req.params);
 
-    if (query.affectedRows === 0) {
-        return res.status(200).send({
-            status: "FAILED",
-            message: "El reclamo no existe",
+    if (idReclamo && !isNaN(idReclamo)) {
+        const query = await serviceDeleteReclamoById(idReclamo);
+
+        if (query.affectedRows === 0) {
+            return res.status(200).send({
+                status: "FAILED",
+                message: "El reclamo no existe",
+            });
+        }
+
+        return res.send({
+            status: "OK",
+            message: "Se ha eliminado el reclamo",
         });
     }
 
-    res.send({ status: "OK", message: "Se ha eliminado el reclamo" });
+    res.status(400).send({
+        status: "FAILED",
+        message: "No se ha ingresado un 'idReclamo' válido",
+    });
 };
 
 export const actualizaReclamoCliente = async (req, res) => {

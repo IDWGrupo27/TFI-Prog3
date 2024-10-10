@@ -1,29 +1,40 @@
 import { connection } from "./connection.js";
 
 // Sentencias que se repiten en varias consultas
-const sqlReclamoColumns =
-    "reclamos.idReclamo, reclamos.asunto, reclamos.descripcion, reclamos.fechaCreado, reclamos.fechaFinalizado, reclamos.fechaCancelado, reclamos.idUsuarioCreador, usuarios.nombre AS nombreUsuarioCreador, usuarios.Apellido AS apellidoUsuarioCreador, usuarios.correoElectronico AS correoUsuarioCreador, reclamostipo.descripcion AS tipoReclamo, reclamosestado.descripcion AS estadoReclamo";
-const sqlReclamoJoinTipo =
-    "INNER JOIN reclamostipo ON reclamos.idReclamoTipo = reclamostipo.idReclamoTipo";
-const sqlReclamoJoinEstado =
-    "INNER JOIN reclamosestado ON reclamos.idReclamoEstado = reclamosestado.idReclamoEstado";
+const sqlReclamoColumns = `r.idReclamo, 
+  r.asunto, 
+  r.descripcion, 
+  r.fechaCreado, 
+  r.fechaFinalizado, 
+  r.fechaCancelado, 
+  r.idUsuarioCreador, 
+  u.nombre AS nombreUsuarioCreador, 
+  u.Apellido AS apellidoUsuarioCreador, 
+  u.correoElectronico AS correoUsuarioCreador, 
+  rt.descripcion AS tipoReclamo, 
+  re.descripcion`;
+
 const sqlReclamoJoinUsuarios =
-    "INNER JOIN usuarios ON reclamos.idUsuarioCreador = usuarios.idUsuario";
+    "INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario";
+const sqlReclamoJoinTipo =
+    "INNER JOIN reclamos_tipo rt ON r.idReclamoTipo = rt.idReclamosTipo";
+const sqlReclamoJoinEstado =
+    "INNER JOIN reclamos_estado re ON r.idReclamoEstado = re.idReclamosEstado";
 
 export const getAllReclamos = async () => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios};`;
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos r ${sqlReclamoJoinUsuarios} ${sqlReclamoJoinEstado} ${sqlReclamoJoinTipo};`;
     const [reclamos] = await connection.query(sql);
     return reclamos;
 };
 
 export const getReclamosByClientId = async (idCliente) => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} INNER JOIN usuarios ON reclamos.idUsuarioCreador = ?`;
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos r INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} WHERE u.idUsuario = ?`;
     const [reclamosCliente] = await connection.query(sql, [idCliente]);
     return reclamosCliente;
 };
 
 export const getReclamoById = async (idReclamo) => {
-    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos ${sqlReclamoJoinTipo} ${sqlReclamoJoinEstado} ${sqlReclamoJoinUsuarios} WHERE reclamos.idReclamo = ?;`;
+    const sql = `SELECT ${sqlReclamoColumns} FROM reclamos r ${sqlReclamoJoinUsuarios} ${sqlReclamoJoinEstado} ${sqlReclamoJoinTipo} WHERE r.idReclamo = ?;`;
     const [reclamos] = await connection.query(sql, [idReclamo]);
     return reclamos[0] ? reclamos[0] : null;
 };
@@ -60,10 +71,10 @@ export const updateReclamo = async (
     { idReclamo, fechaCancelado, estado }
 ) => {
     const sqlActualizar = `UPDATE reclamos 
-                            SET fechaCancelado = ?, idReclamoEstado = ? 
+                            SET fechaCancelado = ?, idReclamosEstado = ? 
                             WHERE idReclamo = ? 
                             AND idUsuarioCreador = ?
-                            AND idReclamoEstado = 1`;
+                            AND idReclamosEstado = 1`;
 
     const [actualizado] = await connection.query(sqlActualizar, [
         fechaCancelado,

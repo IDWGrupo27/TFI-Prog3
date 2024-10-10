@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const verifyToken = (authHeader) => {
     var validated = false;
-    var userData = null;
+    var perfil = null;
 
     if (authHeader && authHeader.startsWith("Bearer")) {
         jwt.verify(
@@ -14,49 +14,44 @@ const verifyToken = (authHeader) => {
                     return;
                 }
                 validated = true;
-                userData = data;
+                perfil = data;
             }
         );
     }
-
-    return { validated, userData };
+    return { validated, perfil };
 };
 
 export const isCliente = async (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const validation = verifyToken(authHeader);
-
-    if (
-        validation.validated &&
-        (validation.userData.tipo === "cliente" ||
-            validation.userData.tipo === "empleado" ||
-            validation.userData.tipo === "administrador")
-    ) {
-        if (validation.userData.tipo === "cliente") {
-            // si es cliente, se lo etiqueta como tal en la req para que el controller lo pueda identificar
-            req.isCliente = true;
-            req.idUsuario = validation.userData.idUsuario;
+    const validation = verifyToken(req.headers["authorization"]);
+    if (validation.validated) {
+        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
+        const tipo = validation.perfil.tipo;
+        if (
+            tipo === "CLIENTE" ||
+            tipo === "EMPLEADO" ||
+            tipo === "ADMINISTRADOR"
+        ) {
+            req.perfil = validation.perfil;
+            return next();
         }
-        next();
-    } else {
-        res.status(403).send({
-            status: "FORBIDDEN",
-            message: "Usuario no autorizado",
-        });
     }
+
+    res.status(403).send({
+        status: "FORBIDDEN",
+        message: "Usuario no autorizado",
+    });
 };
 
 export const isEmpleado = async (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const validation = verifyToken(authHeader);
+    const validation = verifyToken(req.headers["authorization"]);
+    if (validation.validated) {
+        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
+        const tipo = validation.perfil.tipo;
+        if (tipo === "EMPLEADO" || tipo === "ADMINISTRADOR") {
+            req.perfil = validation.perfil;
+            return next();
+        }
 
-    if (
-        validation.validated &&
-        (validation.userData.tipo === "empleado" ||
-            validation.userData.tipo === "administrador")
-    ) {
-        next();
-    } else {
         res.status(403).send({
             status: "FORBIDDEN",
             message: "Usuario no autorizado",
@@ -65,15 +60,18 @@ export const isEmpleado = async (req, res, next) => {
 };
 
 export const isAdministrador = async (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const validation = verifyToken(authHeader);
-
-    if (validation.validated && validation.userData.tipo === "administrador") {
-        next();
-    } else {
-        res.status(403).send({
-            status: "FORBIDDEN",
-            message: "Usuario no autorizado",
-        });
+    const validation = verifyToken(req.headers["authorization"]);
+    if (validation.validated) {
+        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
+        const tipo = validation.perfil.tipo;
+        if (tipo === "ADMINISTRADOR") {
+            req.perfil = validation.perfil;
+            return next();
+        }
     }
+
+    res.status(403).send({
+        status: "FORBIDDEN",
+        message: "Usuario no autorizado",
+    });
 };

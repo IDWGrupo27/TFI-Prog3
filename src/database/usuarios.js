@@ -2,9 +2,9 @@ import { connection } from "./connection.js";
 
 // Sentencias que se repiten en varias consultas
 const sqlUsuarioColumns =
-    "usuarios.idUsuario, usuarios.nombre, usuarios.apellido, usuarios.correoElectronico, usuarios.activo, usuariostipo.descripcion AS tipo";
+    "usuarios.idUsuario, usuarios.nombre, usuarios.apellido, usuarios.correoElectronico, usuarios.activo, usuarios_tipo.descripcion AS tipo";
 const sqlUsuarioJoinTipo =
-    "INNER JOIN usuariostipo ON usuariostipo.idUsuarioTipo = usuarios.idTipoUsuario";
+    "INNER JOIN usuarios_tipo ON usuarios_tipo.idUsuarioTipo = usuarios.idTipoUsuario";
 
 export const getUsuarioById = async (idUsuario) => {
     const sql = `SELECT ${sqlUsuarioColumns} FROM usuarios ${sqlUsuarioJoinTipo} WHERE idUsuario = ?;`;

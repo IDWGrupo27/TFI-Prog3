@@ -9,7 +9,7 @@ import { isCliente } from "../middleware/authProfile.js";
 
 const router = express.Router();
 
-router.get("/", isCliente, getAllUsuarios);
+router.get("/", isEmpleado, getAllUsuarios);
 router.get("/:idUsuario", isCliente, getUsuario);
 
 router.post("/register", createUsuario);
