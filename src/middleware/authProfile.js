@@ -27,9 +27,7 @@ export const isCliente = async (req, res, next) => {
         validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
         const tipo = validation.perfil.tipo;
         if (
-            tipo === "CLIENTE" ||
-            tipo === "EMPLEADO" ||
-            tipo === "ADMINISTRADOR"
+            tipo === "CLIENTE"
         ) {
             req.perfil = validation.perfil;
             return next();

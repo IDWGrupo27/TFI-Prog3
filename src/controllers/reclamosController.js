@@ -147,18 +147,45 @@ export const deleteReclamoById = async (req, res) => {
 };
 
 export const clienteUpdateReclamo = async (req, res) => {
-    const { body } = req;
-    const idReclamo = body ? parseInt(body.idReclamo) : null;
-    const idCliente = parseInt(req.params.idCliente);
+    const idReclamo = req.params.idReclamo
+    const idCliente = parseInt(req.perfil.idUsuario);
 
-    if (idReclamo && idCliente) {
-        // a terminar
-        const reclamo = new Reclamo(body);
+    if (idReclamo) {
+        const fecha = new Date;
+        const reclamo = {
+            idReclamo,
+            fechaCancelado: fecha,
+            estado: 3 
+        }
+
+        try {
+            const reclamoActualizado = await serviceUpdateReclamo(idCliente, reclamo);
+
+            if(reclamoActualizado.affectedRows === 0){
+                return res.status(400).send({
+                    status: "FAILED",
+                    mensaje: "No se pudo actualizar el estado del reclamo!"
+                })
+            }
+
+            res.status(201).send({
+                status: "OK",
+                data: reclamoActualizado,
+            });
+
+        } catch(e) {
+            console.log(e);
+            res.status(500).send({
+                status: "FAILED",
+                message: "Error al actualizar el reclamo",
+            });
+        }
+
     } else {
         res.status(404).send({
             status: "FAILED",
             data: {
-                error: "El parámetro idCliente es inválido.",
+                error: "El parámetro idReclamo es inválido.",
             },
         });
     }

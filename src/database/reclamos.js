@@ -71,10 +71,10 @@ export const updateReclamo = async (
     { idReclamo, fechaCancelado, estado }
 ) => {
     const sqlActualizar = `UPDATE reclamos 
-                            SET fechaCancelado = ?, idReclamosEstado = ? 
+                            SET fechaCancelado = ?, idReclamoEstado = ? 
                             WHERE idReclamo = ? 
                             AND idUsuarioCreador = ?
-                            AND idReclamosEstado = 1`;
+                            AND idReclamoEstado = 1`;
 
     const [actualizado] = await connection.query(sqlActualizar, [
         fechaCancelado,
