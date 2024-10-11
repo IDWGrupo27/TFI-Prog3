@@ -12,7 +12,7 @@ import { isAdministrador } from "../middleware/authProfile.js";
 usuarios.get("/", isAdministrador, getAllUsuarios);
 usuarios.get("/:idUsuario", isAdministrador, getUsuario);
 
-usuarios.post("/register", createUsuario);
+usuarios.post("/register", isAdministrador, createUsuario);
 usuarios.post("/login", loginUsuario);
 
 export default usuarios;

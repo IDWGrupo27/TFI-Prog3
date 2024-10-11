@@ -10,6 +10,6 @@ import { isCliente } from "../../middleware/authProfile.js";
 
 reclamos.get("/", isCliente, getRequesterReclamos);
 reclamos.post("/", isCliente, createReclamo);
-reclamos.put("/:idReclamo", isCliente, clienteUpdateReclamo);
+reclamos.patch("/:idReclamo", isCliente, clienteUpdateReclamo);
 
 export default reclamos;
