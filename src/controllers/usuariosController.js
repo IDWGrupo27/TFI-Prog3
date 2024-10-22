@@ -86,7 +86,7 @@ export const loginUsuario = async (req, res) => {
         });
     }
     try {
-        const usuario = usuariosService.loginUsuario({
+        const usuario = await usuariosService.loginUsuario({
             correoElectronico: req.body.correoElectronico,
             contrasenia: req.body.contrasenia,
         });

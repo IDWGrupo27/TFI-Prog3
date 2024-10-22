@@ -10,7 +10,7 @@ export const getAllReclamos = async (req, res) => {
 
 export const getRequesterReclamos = async (req, res) => {
     if (req.perfil) {
-        const reclamos = await serviceGetReclamosByClientId(
+        const reclamos = await reclamosService.getReclamosByClientId(
             parseInt(req.perfil.idUsuario)
         );
 
@@ -40,7 +40,7 @@ export const getReclamosByClientId = async (req, res) => {
         });
     }
 
-    const reclamos = await serviceGetReclamosByClientId(idCliente);
+    const reclamos = await reclamosService.getReclamosByClientId(idCliente);
 
     if (reclamos.length === 0) {
         return res.status(200).send({
@@ -57,7 +57,7 @@ export const getReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
 
     if (idReclamo) {
-        const reclamo = await serviceGetReclamoById(idReclamo);
+        const reclamo = await reclamosService.getReclamoById(idReclamo);
         if (!reclamo) {
             return res.status(404).send({
                 message: "No se encontró el reclamo",

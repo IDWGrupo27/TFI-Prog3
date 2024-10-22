@@ -1,17 +1,12 @@
-import {
-    createReclamo,
-    getReclamoById,
-    updateReclamo,
-    getAllReclamos,
-    getReclamosByClientId,
-    deleteReclamoById,
-} from "../database/reclamos.js";
 import { Reclamo } from "../model/Reclamo.js";
+import ReclamosDatabase from "../database/reclamos.js";
+
+const database = new ReclamosDatabase();
 
 export default class ReclamosService {
     getReclamoById = async (idReclamo) => {
         try {
-            const data = await getReclamoById(idReclamo);
+            const data = await database.getReclamoById(idReclamo);
             if (data) {
                 const reclamo = new Reclamo(data);
                 return reclamo;
@@ -29,7 +24,7 @@ export default class ReclamosService {
      */
     getAllReclamos = async () => {
         try {
-            const data = await getAllReclamos();
+            const data = await database.getAllReclamos();
             return data.map((rd) => new Reclamo(rd));
         } catch (error) {
             console.error(error);
@@ -42,7 +37,7 @@ export default class ReclamosService {
      */
     getReclamosByClientId = async (idCliente) => {
         try {
-            const data = await getReclamosByClientId(idCliente);
+            const data = await database.getReclamosByClientId(idCliente);
             return data.map((rd) => new Reclamo(rd));
         } catch (error) {
             console.error(error);
@@ -52,7 +47,7 @@ export default class ReclamosService {
 
     createReclamo = async (dataReclamo) => {
         try {
-            const data = await createReclamo(dataReclamo);
+            const data = await database.createReclamo(dataReclamo);
             return data;
         } catch (error) {
             console.error(error);
@@ -62,7 +57,7 @@ export default class ReclamosService {
 
     updateReclamo = async (dataReclamo) => {
         try {
-            const data = await updateReclamo(idCliente, dataReclamo);
+            const data = await database.updateReclamo(idCliente, dataReclamo);
             return data;
         } catch (error) {
             console.error(error);
@@ -72,7 +67,7 @@ export default class ReclamosService {
 
     deleteReclamoById = async (idReclamo) => {
         try {
-            const data = await deleteReclamoById(idReclamo);
+            const data = await database.deleteReclamoById(idReclamo);
             return data;
         } catch (error) {
             console.error(error);
