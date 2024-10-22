@@ -1,4 +1,7 @@
 export class Reclamo {
+    /**
+     * @param {{idReclamo: number, asunto: string, descripcion: string, fechaCreado: Date, fechaFinalizado: Date, fechaCancelado: Date, idUsuarioCreador: number, nombreUsuarioCreador: string, apellidoUsuarioCreador: string, correoUsuarioCreador: string, tipoReclamo: string, estadoReclamo: string}}
+     */
     constructor({
         idReclamo,
         asunto,

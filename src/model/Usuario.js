@@ -1,4 +1,7 @@
 export class Usuario {
+    /**
+     * @param {{ idUsuario: number; nombre: string; apellido: string; correoElectronico: string; activo: boolean; tipo: string;}} param0
+     */
     constructor({
         idUsuario,
         nombre,

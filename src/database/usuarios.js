@@ -15,6 +15,15 @@ export const getUsuarioById = async (idUsuario) => {
     return usuarios[0];
 };
 
+export const getUsuarioByEmail = async (email) => {
+    const sql = `SELECT ${sqlUsuarioColumns} FROM usuarios ${sqlUsuarioJoinTipo} WHERE correoElectronico = ?;`;
+    const [usuarios] = await connection.query(sql, [email]);
+    if (!usuarios || usuarios.length === 0) {
+        return null;
+    }
+    return usuarios[0];
+};
+
 export const getAllUsuarios = async (idUsuario) => {
     const sql = `SELECT ${sqlUsuarioColumns} FROM usuarios ${sqlUsuarioJoinTipo};`;
     const [usuarios] = await connection.query(sql, [idUsuario]);
@@ -22,38 +31,19 @@ export const getAllUsuarios = async (idUsuario) => {
 };
 
 export const createUsuario = async (usuario) => {
-    const sqlCheckUsuario = `SELECT idUsuario FROM usuarios WHERE correoElectronico = ?;`;
-    const [usuarios] = await connection.query(sqlCheckUsuario, [
-        usuario.correoElectronico,
-    ]);
-
-    if (usuarios[0]) {
-        return {
-            status: "EMAIL",
-            message: "El correo electrónico ya está registrado",
-        };
-    }
-
     try {
         const sqlNewUsuario = `INSERT INTO usuarios (nombre, apellido, correoElectronico, contrasenia, idTipoUsuario) VALUES (?, ?, ?, ?, ?)`;
-        const [newUsuario] = await connection.query(sqlNewUsuario, [
+        const [result] = await connection.query(sqlNewUsuario, [
             usuario.nombre,
             usuario.apellido,
             usuario.correoElectronico,
             usuario.contrasenia,
             1,
         ]);
-        return {
-            status: "OK",
-            message: "Se registró al usuario",
-            idNuevoUsuario: newUsuario.insertId,
-        };
+        return result;
     } catch (e) {
         console.log(e);
-        return {
-            status: "FAILED",
-            message: "Error en el servidor al crear el nuevo usuario",
-        };
+        return null;
     }
 };
 
@@ -63,6 +53,5 @@ export const loginUsuario = async (data) => {
         data.correoElectronico,
         data.contrasenia,
     ]);
-
     return usuario ? usuario : null;
 };
