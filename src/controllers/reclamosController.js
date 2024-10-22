@@ -1,16 +1,10 @@
-import { Reclamo } from "../model/Reclamo.js";
-import {
-    serviceCreateReclamo,
-    serviceGetReclamoById,
-    serviceUpdateReclamo,
-    serviceGetAllReclamos,
-    serviceGetReclamosByClientId,
-    serviceDeleteReclamoById,
-} from "../service/reclamoService.js";
+import ReclamosService from "../service/reclamosService.js";
 import { enviarCorreo } from "../utiles/correoElectronico.js";
 
+const reclamosService = new ReclamosService();
+
 export const getAllReclamos = async (req, res) => {
-    const reclamos = await serviceGetAllReclamos();
+    const reclamos = await reclamosService.getAllReclamos();
     res.send({ status: "OK", reclamos });
 };
 
@@ -106,12 +100,20 @@ export const createReclamo = async (req, res) => {
     };
 
     try {
-        const reclamoCreado = await serviceCreateReclamo(reclamo);
-        res.status(201).send({
-            status: "OK",
-            data: reclamoCreado,
-        });
-        enviarCorreo(reclamo)
+        const resultData = await reclamosService.createReclamo(reclamo);
+        if (resultData?.affectedRows === 1) {
+            res.status(201).send({
+                status: "OK",
+                data: await reclamosService.getReclamoById(resultData.insertId),
+            });
+            enviarCorreo(reclamo);
+            return;
+        } else {
+            return res.status(400).send({
+                status: "FAILED",
+                message: "No se pudo crear el reclamo",
+            });
+        }
     } catch (e) {
         console.log(e);
         res.status(500).send({
@@ -123,11 +125,8 @@ export const createReclamo = async (req, res) => {
 
 export const deleteReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
-
-    console.log(req.params);
-
     if (idReclamo && !isNaN(idReclamo)) {
-        const query = await serviceDeleteReclamoById(idReclamo);
+        const query = await reclamosService.deleteReclamoById(idReclamo);
 
         if (query.affectedRows === 0) {
             return res.status(200).send({
@@ -149,40 +148,37 @@ export const deleteReclamoById = async (req, res) => {
 };
 
 export const clienteUpdateReclamo = async (req, res) => {
-    const idReclamo = req.params.idReclamo
+    const idReclamo = req.params.idReclamo;
     const idCliente = parseInt(req.perfil.idUsuario);
 
     if (idReclamo) {
-        const fecha = new Date;
-        const reclamo = {
-            idReclamo,
-            fechaCancelado: fecha,
-            estado: 3 
-        }
-
+        const fecha = new Date();
         try {
-            const reclamoActualizado = await serviceUpdateReclamo(idCliente, reclamo);
+            const reclamoActualizado = await reclamosService.updateReclamo({
+                idReclamo,
+                idCliente,
+                idReclamoEstado: 3,
+                fecha,
+            });
 
-            if(reclamoActualizado.affectedRows === 0){
+            if (reclamoActualizado?.affectedRows === 0) {
                 return res.status(400).send({
                     status: "FAILED",
-                    mensaje: "No se pudo actualizar el estado del reclamo!"
-                })
+                    mensaje: "No se pudo actualizar el estado del reclamo!",
+                });
             }
 
             res.status(201).send({
                 status: "OK",
-                data: reclamoActualizado,
+                data: await reclamosService.getReclamoById(idReclamo),
             });
-
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             res.status(500).send({
                 status: "FAILED",
                 message: "Error al actualizar el reclamo",
             });
         }
-
     } else {
         res.status(404).send({
             status: "FAILED",

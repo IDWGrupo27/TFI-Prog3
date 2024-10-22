@@ -48,7 +48,7 @@ export const createReclamo = async ({
 }) => {
     const sqlReclamo = `INSERT INTO reclamos (asunto, descripcion, fechaCreado, idReclamoEstado, 
                         idReclamoTipo, idUsuarioCreador) VALUES (?, ?, ?, ?, ?, ?)`;
-    const [reclamoCreado] = await connection.query(sqlReclamo, [
+    const [result] = await connection.query(sqlReclamo, [
         asunto,
         descripcion,
         fecha,
@@ -57,7 +57,7 @@ export const createReclamo = async ({
         idUsuarioCreador,
     ]);
 
-    return reclamoCreado;
+    return result;
 };
 
 export const deleteReclamoById = async (idReclamo) => {
@@ -66,22 +66,23 @@ export const deleteReclamoById = async (idReclamo) => {
     return data;
 };
 
-export const updateReclamo = async (
+export const updateReclamo = async ({
+    idReclamo,
     idCliente,
-    { idReclamo, fechaCancelado, estado }
-) => {
+    fechaCancelado,
+    idReclamoEstado,
+}) => {
     const sqlActualizar = `UPDATE reclamos 
                             SET fechaCancelado = ?, idReclamoEstado = ? 
                             WHERE idReclamo = ? 
                             AND idUsuarioCreador = ?
                             AND idReclamoEstado = 1`;
 
-    const [actualizado] = await connection.query(sqlActualizar, [
+    const [result] = await connection.query(sqlActualizar, [
         fechaCancelado,
-        estado,
+        idReclamoEstado,
         idReclamo,
         idCliente,
     ]);
-
-    return actualizado;
+    return result;
 };
