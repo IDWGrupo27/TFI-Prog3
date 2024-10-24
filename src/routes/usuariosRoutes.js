@@ -1,18 +1,15 @@
 import express from "express";
 const usuarios = express.Router();
-
-import {
-    getUsuario,
-    getAllUsuarios,
-    createUsuario,
-    loginUsuario,
-} from "../controllers/usuariosController.js";
+  
 import { isAdministrador } from "../middleware/authProfile.js";
+import  UsuariosController from "../controllers/usuariosController.js";
 
-usuarios.get("/", isAdministrador, getAllUsuarios);
-usuarios.get("/:idUsuario", isAdministrador, getUsuario);
+const usuariosController = new UsuariosController()
 
-usuarios.post("/register", isAdministrador, createUsuario);
-usuarios.post("/login", loginUsuario);
+usuarios.get("/", isAdministrador, usuariosController.getAllUsuarios);
+usuarios.get("/:idUsuario", isAdministrador, usuariosController.getUsuario);
+
+usuarios.post("/register", isAdministrador, usuariosController.createUsuario);
+usuarios.post("/login", usuariosController.loginUsuario);
 
 export default usuarios;
