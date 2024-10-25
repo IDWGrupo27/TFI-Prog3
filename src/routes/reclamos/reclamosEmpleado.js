@@ -1,17 +1,21 @@
 import express from "express";
 const reclamos = express.Router();
-import {
+/*import {
     getAllReclamos,
     getReclamoById,
     getReclamosByClientId,
     deleteReclamoById,
-} from "../../controllers/reclamosController.js";
+} from "../../controllers/reclamosController.js";*/
+import ReclamosController from "../../controllers/reclamosController.js";
 import { isEmpleado } from "../../middleware/authProfile.js";
 
-reclamos.get("/", isEmpleado, getAllReclamos);
-reclamos.get("/cliente/:idCliente", isEmpleado, getReclamosByClientId);
-reclamos.get("/:idReclamo", isEmpleado, getReclamoById);
+const reclamosController = new ReclamosController();
 
-reclamos.delete("/:idReclamo", isEmpleado, deleteReclamoById);
+reclamos.get("/", isEmpleado, reclamosController.getAllReclamos);
+
+reclamos.get("/cliente/:idCliente", isEmpleado, reclamosController.getReclamosByClientId);
+reclamos.get("/:idReclamo", isEmpleado, reclamosController.getReclamoById);
+
+reclamos.delete("/:idReclamo", isEmpleado, reclamosController.deleteReclamoById);
 
 export default reclamos;
