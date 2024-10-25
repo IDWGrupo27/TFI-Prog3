@@ -21,55 +21,70 @@ const verifyToken = (authHeader) => {
     return { validated, perfil };
 };
 
-export const isCliente = async (req, res, next) => {
-    const validation = verifyToken(req.headers["authorization"]);
-    if (validation.validated) {
-        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
-        const tipo = validation.perfil.tipo;
-        if (
-            tipo === "CLIENTE"
-        ) {
+export default class AuthProfile {
+    isLoginValidated = (req) => {
+        const validation = verifyToken(req.headers["authorization"]);
+        if (validation.validated) {
             req.perfil = validation.perfil;
-            return next();
+            req.perfil.tipo = validation.perfil.tipo.toUpperCase();
+            return true;
         }
-    }
+        return false;
+    };
 
-    res.status(403).send({
-        status: "FORBIDDEN",
-        message: "Usuario no autorizado",
-    });
-};
-
-export const isEmpleado = async (req, res, next) => {
-    const validation = verifyToken(req.headers["authorization"]);
-    if (validation.validated) {
-        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
-        const tipo = validation.perfil.tipo;
-        if (tipo === "EMPLEADO" || tipo === "ADMINISTRADOR") {
-            req.perfil = validation.perfil;
-            return next();
+    isCliente = async (req, res, next) => {
+        if (this.isLoginValidated(req)) {
+            const tipo = req.perfil.tipo.toUpperCase();
+            if (tipo === "CLIENTE") {
+                return next();
+            }
         }
 
         res.status(403).send({
             status: "FORBIDDEN",
             message: "Usuario no autorizado",
         });
-    }
-};
+    };
 
-export const isAdministrador = async (req, res, next) => {
-    const validation = verifyToken(req.headers["authorization"]);
-    if (validation.validated) {
-        validation.perfil.tipo = validation.perfil.tipo.toUpperCase();
-        const tipo = validation.perfil.tipo;
-        if (tipo === "ADMINISTRADOR") {
-            req.perfil = validation.perfil;
-            return next();
+    isEmpleado = async (req, res, next) => {
+        if (this.isLoginValidated(req)) {
+            const tipo = req.perfil.tipo.toUpperCase();
+            if (tipo === "EMPLEADO") {
+                return next();
+            }
         }
-    }
 
-    res.status(403).send({
-        status: "FORBIDDEN",
-        message: "Usuario no autorizado",
-    });
-};
+        res.status(403).send({
+            status: "FORBIDDEN",
+            message: "Usuario no autorizado",
+        });
+    };
+
+    isAdministrador = async (req, res, next) => {
+        if (this.isLoginValidated(req)) {
+            const tipo = req.perfil.tipo.toUpperCase();
+            if (tipo === "ADMINISTRADOR") {
+                return next();
+            }
+        }
+
+        res.status(403).send({
+            status: "FORBIDDEN",
+            message: "Usuario no autorizado",
+        });
+    };
+
+    isEmpleadoOrAdministrador = async (req, res, next) => {
+        if (this.isLoginValidated(req)) {
+            const tipo = req.perfil.tipo.toUpperCase();
+            if (tipo === "ADMINISTRADOR" || tipo === "EMPLEADO") {
+                return next();
+            }
+        }
+
+        res.status(403).send({
+            status: "FORBIDDEN",
+            message: "Usuario no autorizado",
+        });
+    };
+}

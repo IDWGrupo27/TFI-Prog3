@@ -7,12 +7,14 @@ import {
     createUsuario,
     loginUsuario,
 } from "../controllers/usuariosController.js";
-import { isAdministrador } from "../middleware/authProfile.js";
+import AuthProfile from "../middleware/authProfile.js";
 
-usuarios.get("/", isAdministrador, getAllUsuarios);
-usuarios.get("/:idUsuario", isAdministrador, getUsuario);
+const auth = new AuthProfile();
 
-usuarios.post("/register", isAdministrador, createUsuario);
+usuarios.get("/", auth.isAdministrador, getAllUsuarios);
+usuarios.get("/:idUsuario", auth.isAdministrador, getUsuario);
+
+usuarios.post("/register", auth.isAdministrador, createUsuario);
 usuarios.post("/login", loginUsuario);
 
 export default usuarios;

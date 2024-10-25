@@ -8,32 +8,17 @@ export const getAllReclamos = async (req, res) => {
     res.send({ status: "OK", reclamos });
 };
 
-export const getRequesterReclamos = async (req, res) => {
-    if (req.perfil) {
-        const reclamos = await reclamosService.getReclamosByClientId(
-            parseInt(req.perfil.idUsuario)
-        );
-
-        if (reclamos.length === 0) {
-            return res.status(200).send({
-                status: "OK",
-                reclamos: [],
-                message: "No hay reclamos de este cliente",
-            });
-        }
-
-        res.send({ status: "OK", reclamos });
-    } else {
-        res.status(403).send({
-            status: "FORBIDDEN",
-            message: "Usuario sin perfil",
-        });
-    }
-};
-
 export const getReclamosByClientId = async (req, res) => {
     const idCliente = req.params.idCliente;
-    if (req.isCliente && parseInt(req.idUsuario) !== parseInt(idCliente)) {
+
+    if (!idCliente) {
+        return res.status(400).send({ message: "Debe ingresar un 'idCliente" });
+    }
+
+    if (
+        req.perfil.tipo === "CLIENTE" &&
+        idCliente !== parseInt(req.perfil.idUsuario)
+    ) {
         return res.status(403).send({
             status: "FAILED",
             message: "No tenés permiso para ver los reclamos de este cliente",
@@ -56,19 +41,30 @@ export const getReclamosByClientId = async (req, res) => {
 export const getReclamoById = async (req, res) => {
     const idReclamo = req.params.idReclamo;
 
-    if (idReclamo) {
-        const reclamo = await reclamosService.getReclamoById(idReclamo);
-        if (!reclamo) {
-            return res.status(404).send({
-                message: "No se encontró el reclamo",
-            });
-        }
-        return res.send({ status: "OK", reclamo });
-    } else {
+    if (!idReclamo) {
         return res.status(400).send({
             message: "Debe ingresar un 'idReclamo'",
         });
     }
+
+    const reclamo = await reclamosService.getReclamoById(idReclamo);
+    if (!reclamo) {
+        return res.status(404).send({
+            message: "No se encontró el reclamo",
+        });
+    }
+
+    if (
+        req.perfil.tipo === "CLIENTE" &&
+        reclamo.idUsuarioCreador !== parseInt(req.perfil.idUsuario)
+    ) {
+        return res.status(403).send({
+            status: "FAILED",
+            message: "No tenés permiso para ver este reclamo",
+        });
+    }
+
+    return res.send({ status: "OK", reclamo });
 };
 
 export const createReclamo = async (req, res) => {
