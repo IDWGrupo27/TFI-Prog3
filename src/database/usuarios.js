@@ -2,13 +2,11 @@ import { connection } from "./connection.js";
 
 export default class UsuariosDatabase {
     // Sentencias que se repiten en varias consultas
-    sqlUsuarioColumns =
-        "usuarios.idUsuario, usuarios.nombre, usuarios.apellido, usuarios.correoElectronico, usuarios.activo, usuarios_tipo.descripcion AS tipo";
-    sqlUsuarioJoinTipo =
-        "INNER JOIN usuarios_tipo ON usuarios_tipo.idUsuarioTipo = usuarios.idTipoUsuario";
+    sqlUsuarioColumns = "u.idUsuario, u.nombre, u.apellido, u.correoElectronico, u.activo, ut.descripcion AS tipo";
+    sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idTipoUsuario";
 
     getUsuarioById = async (idUsuario) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios ${this.sqlUsuarioJoinTipo} WHERE idUsuario = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE idUsuario = ?;`;
         const [usuarios] = await connection.query(sql, [idUsuario]);
         if (!usuarios || usuarios.length === 0) {
             return null;
@@ -17,7 +15,7 @@ export default class UsuariosDatabase {
     };
 
     getUsuarioByEmail = async (email) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios ${this.sqlUsuarioJoinTipo} WHERE correoElectronico = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE correoElectronico = ?;`;
         const [usuarios] = await connection.query(sql, [email]);
         if (!usuarios || usuarios.length === 0) {
             return null;
@@ -26,8 +24,14 @@ export default class UsuariosDatabase {
     };
 
     getAllUsuarios = async (idUsuario) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios ${this.sqlUsuarioJoinTipo};`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo};`;
         const [usuarios] = await connection.query(sql, [idUsuario]);
+        return usuarios;
+    };
+
+    getUsuariosByIdOficina = async (idOficina) => {
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} INNER JOIN usuarios_oficinas uo ON uo.idUsuario = u.idUsuario WHERE idOficina = ?;`;
+        const [usuarios] = await connection.query(sql, [idOficina]);
         return usuarios;
     };
 
@@ -50,10 +54,7 @@ export default class UsuariosDatabase {
 
     loginUsuario = async (data) => {
         const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios ${this.sqlUsuarioJoinTipo} WHERE correoElectronico = ? AND contrasenia = ?;`;
-        const [[usuario]] = await connection.query(sql, [
-            data.correoElectronico,
-            data.contrasenia,
-        ]);
+        const [[usuario]] = await connection.query(sql, [data.correoElectronico, data.contrasenia]);
         return usuario ? usuario : null;
     };
 }

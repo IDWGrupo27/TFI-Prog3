@@ -13,12 +13,9 @@ export default class ReclamosDatabase {
     u.correoElectronico AS correoUsuarioCreador, 
     rt.descripcion AS tipoReclamo, 
     re.descripcion AS estadoReclamo`;
-    sqlReclamoJoinUsuarios =
-        "INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario";
-    sqlReclamoJoinEstado =
-        "INNER JOIN reclamos_estado re ON r.idReclamoEstado = re.idReclamosEstado";
-    sqlReclamoJoinTipo =
-        "INNER JOIN reclamos_tipo rt ON r.idReclamoTipo = rt.idReclamosTipo";
+    sqlReclamoJoinUsuarios = "INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario";
+    sqlReclamoJoinEstado = "INNER JOIN reclamos_estado re ON r.idReclamoEstado = re.idReclamosEstado";
+    sqlReclamoJoinTipo = "INNER JOIN reclamos_tipo rt ON r.idReclamoTipo = rt.idReclamosTipo";
 
     getAllReclamos = async () => {
         {
@@ -40,13 +37,7 @@ export default class ReclamosDatabase {
         return reclamos[0] ? reclamos[0] : null;
     };
 
-    createReclamo = async ({
-        idUsuarioCreador,
-        idReclamoTipo,
-        asunto,
-        descripcion,
-        fecha,
-    }) => {
+    createReclamo = async ({ idUsuarioCreador, idReclamoTipo, asunto, descripcion, fecha }) => {
         const sqlReclamo = `INSERT INTO reclamos (asunto, descripcion, fechaCreado, idReclamoEstado, 
                             idReclamoTipo, idUsuarioCreador) VALUES (?, ?, ?, ?, ?, ?)`;
         const [result] = await connection.query(sqlReclamo, [
@@ -67,24 +58,12 @@ export default class ReclamosDatabase {
         return data;
     };
 
-    updateReclamo = async ({
-        idReclamo,
-        idCliente,
-        fechaCancelado,
-        idReclamoEstado,
-    }) => {
+    updateReclamo = async (idReclamo, { fechaCancelado, idReclamoEstado }) => {
         const sqlActualizar = `UPDATE reclamos 
                                 SET fechaCancelado = ?, idReclamoEstado = ? 
-                                WHERE idReclamo = ? 
-                                AND idUsuarioCreador = ?
-                                AND idReclamoEstado = 1`;
+                                WHERE idReclamo = ?`;
 
-        const [result] = await connection.query(sqlActualizar, [
-            fechaCancelado,
-            idReclamoEstado,
-            idReclamo,
-            idCliente,
-        ]);
+        const [result] = await connection.query(sqlActualizar, [fechaCancelado, idReclamoEstado, idReclamo]);
         return result;
     };
 }

@@ -9,84 +9,66 @@ export default class ReclamosController {
         res.send({ status: "OK", reclamos });
     };
 
-    getRequesterReclamos = async (req, res) => {
-        if (req.perfil) {
-            const reclamos = await reclamosService.getReclamosByClientId(
-                parseInt(req.perfil.idUsuario)
-            );
-
-            if (reclamos.length === 0) {
-                return res.status(200).send({
-                    status: "OK",
-                    reclamos: [],
-                    message: "No hay reclamos de este cliente",
-                });
-            }
-
-            res.send({ status: "OK", reclamos });
-        } else {
-            res.status(403).send({
-                status: "FORBIDDEN",
-                message: "Usuario sin perfil",
-            });
-        }
+    /** Devuelve los reclamos del cliente logueado */
+    getReclamosByPerfil = async (req, res) => {
+        const reclamos = await reclamosService.getReclamosByClientId(req.perfil?.idUsuario);
+        console.log(reclamos);
+        res.send({ status: "OK", reclamos });
     };
 
     getReclamosByClientId = async (req, res) => {
-        const idCliente = req.params.idCliente;
-        if (req.isCliente && parseInt(req.idUsuario) !== parseInt(idCliente)) {
-            return res.status(403).send({
-                status: "FAILED",
-                message:
-                    "No tenés permiso para ver los reclamos de este cliente",
-            });
+        const idCliente = req.params?.idCliente;
+
+        if (!idCliente) {
+            res.status(400).send({ message: "Debe ingresar un 'idCliente'" });
         }
 
         const reclamos = await reclamosService.getReclamosByClientId(idCliente);
 
-        if (reclamos.length === 0) {
-            return res.status(200).send({
-                status: "OK",
-                reclamos: [],
-                message: "No hay reclamos de este cliente",
-            });
-        }
+        const resObj = {
+            status: "OK",
+            reclamos,
+        };
+        if (reclamos.length === 0) resObj.message = "No hay reclamos";
 
-        res.send({ status: "OK", reclamos });
+        res.send(resObj);
     };
 
     getReclamoById = async (req, res) => {
-        const idReclamo = req.params.idReclamo;
+        const idReclamo = req.params?.idReclamo;
 
-        if (idReclamo) {
-            const reclamo = await reclamosService.getReclamoById(idReclamo);
-            if (!reclamo) {
-                return res.status(404).send({
-                    message: "No se encontró el reclamo",
-                });
-            }
-            return res.send({ status: "OK", reclamo });
-        } else {
-            return res.status(400).send({
-                message: "Debe ingresar un 'idReclamo'",
+        if (!idReclamo) {
+            return res.status(400).send({ message: "Debe ingresar un 'idReclamo'" });
+        }
+
+        const reclamo = await reclamosService.getReclamoById(idReclamo);
+
+        if (!reclamo) {
+            return res.status(404).send({
+                message: "No se encontró el reclamo",
             });
         }
+
+        if (req.perfil?.tipo === "CLIENTE" && reclamo.idUsuarioCreador !== req.perfil?.idCliente) {
+            return res.status(403).send({
+                status: "FAILED",
+                message: "No tenés permiso para ver el reclamo",
+            });
+        }
+
+        return res.send({ status: "OK", reclamo });
     };
 
     createReclamo = async (req, res) => {
         const { body } = req;
         let fecha = new Date();
 
-        if (
-            !body.idUsuarioCreador ||
-            !body.idReclamoTipo ||
-            !body.asunto ||
-            !body.descripcion
-        ) {
+        const idUsuarioCreador = req.perfil?.idUsuario;
+
+        if (!body.idReclamoTipo || !body.asunto || !body.descripcion) {
             return res.status(400).send({
                 status: "FAILED",
-                message:
-                    "Debe ingresar un 'idUsuarioCreador', 'idReclamoTipo', 'asunto' y 'descripcion'",
+                message: "Debe ingresar un 'idUsuarioCreador', 'idReclamoTipo', 'asunto' y 'descripcion'",
             });
         }
         if (body.fecha) {
@@ -94,7 +76,7 @@ export default class ReclamosController {
         }
 
         const reclamo = {
-            idUsuarioCreador: body.idUsuarioCreador,
+            idUsuarioCreador,
             idReclamoTipo: body.idReclamoTipo,
             asunto: body.asunto,
             descripcion: body.descripcion,
@@ -106,9 +88,7 @@ export default class ReclamosController {
             if (resultData?.affectedRows === 1) {
                 res.status(201).send({
                     status: "OK",
-                    data: await reclamosService.getReclamoById(
-                        resultData.insertId
-                    ),
+                    data: await reclamosService.getReclamoById(resultData.insertId),
                 });
                 return;
             } else {
@@ -150,18 +130,23 @@ export default class ReclamosController {
         });
     };
 
-    clienteUpdateReclamo = async (req, res) => {
-        const idReclamo = req.params.idReclamo;
-        const idCliente = parseInt(req.perfil.idUsuario);
+    cancelarReclamo = async (req, res) => {
+        const idReclamo = req.params?.idReclamo;
 
         if (idReclamo) {
-            const fecha = new Date();
+            const reclamo = await reclamosService.getReclamoById(idReclamo);
+            if (reclamo?.idUsuarioCreador !== req.perfil?.idUsuario) {
+                return res.status(403).send({
+                    status: "FAILED",
+                    mensaje: "No tiene permisos para actualizar este reclamo",
+                });
+            }
+
+            const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
             try {
-                const reclamoActualizado = await reclamosService.updateReclamo({
-                    idReclamo,
-                    idCliente,
+                const reclamoActualizado = await reclamosService.updateReclamo(idReclamo, {
+                    fechaCancelado: fecha,
                     idReclamoEstado: 3,
-                    fecha,
                 });
 
                 if (reclamoActualizado?.affectedRows === 0) {

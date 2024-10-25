@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import reclamos from "./routes/reclamosRoutes.js";
 import usuarios from "./routes/usuariosRoutes.js";
+import oficinas from "./routes/oficinasRoutes.js";
 
 dotenv.config();
 
@@ -13,9 +14,8 @@ app.use(morgan("dev"));
 
 app.use("/api/reclamos", reclamos);
 app.use("/api/usuarios", usuarios);
+app.use("/api/oficinas", oficinas);
 
 app.listen(process.env.PUERTO, () => {
-    console.log(
-        `Servidor web corriendo en http://localhost:${process.env.PUERTO}`
-    );
+    console.log(`Servidor web corriendo en http://localhost:${process.env.PUERTO}`);
 });

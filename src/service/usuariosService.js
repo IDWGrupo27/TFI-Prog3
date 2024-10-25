@@ -1,4 +1,4 @@
-import { Usuario } from "../model/Usuario.js";
+import { Usuario } from "../model/model.js";
 import UsuariosDatabase from "../database/usuarios.js";
 
 const usuariosDatabase = new UsuariosDatabase();
@@ -32,6 +32,19 @@ export default class UsuariosService {
     getAllUsuarios = async () => {
         try {
             const data = await usuariosDatabase.getAllUsuarios();
+            return data.map((u) => new Usuario(u));
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    /**
+     * @returns {Promise<Usuario[]>}
+     */
+    getUsuariosByIdOficina = async (idOficina) => {
+        try {
+            const data = await usuariosDatabase.getUsuariosByIdOficina(idOficina);
             return data.map((u) => new Usuario(u));
         } catch (error) {
             console.error(error);

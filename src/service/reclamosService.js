@@ -1,4 +1,4 @@
-import { Reclamo } from "../model/Reclamo.js";
+import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
 
 const database = new ReclamosDatabase();
@@ -55,10 +55,14 @@ export default class ReclamosService {
         }
     };
 
-    updateReclamo = async (dataReclamo) => {
+    updateReclamo = async (idReclamo, dataReclamo) => {
         try {
-            const data = await database.updateReclamo(idCliente, dataReclamo);
-            return data;
+            const data = await database.updateReclamo(idReclamo, dataReclamo);
+            if (data?.affectedRows === 0) {
+                return null;
+            }
+            const reclamo = await this.getReclamoById(idReclamo);
+            return reclamo;
         } catch (error) {
             console.error(error);
             return null;

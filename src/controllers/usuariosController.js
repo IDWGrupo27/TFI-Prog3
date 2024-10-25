@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 const usuariosService = new UsuariosService();
 
 export default class UsuariosController {
-
     getUsuario = async (req, res) => {
         if (!req.params.idUsuario) {
             return res.status(400).send({
@@ -27,6 +26,16 @@ export default class UsuariosController {
         });
     };
 
+    getUsuarioByPerfil = async (req, res) => {
+        const usuario = await usuariosService.getUsuarioById(req.perfil?.idUsuario);
+        if (usuario) {
+            return res.send({
+                status: "OK",
+                usuario,
+            });
+        }
+    };
+
     getAllUsuarios = async (req, res) => {
         const usuarios = await usuariosService.getAllUsuarios();
         res.send({
@@ -36,22 +45,14 @@ export default class UsuariosController {
     };
 
     createUsuario = async (req, res) => {
-        if (
-            !req.body.nombre ||
-            !req.body.apellido ||
-            !req.body.correoElectronico ||
-            !req.body.contrasenia
-        ) {
+        if (!req.body.nombre || !req.body.apellido || !req.body.correoElectronico || !req.body.contrasenia) {
             return res.status(400).send({
                 status: "FAILED",
-                message:
-                    "Se requiere 'nombre', 'apellido', 'correoElectronico' y 'contrasenia', ",
+                message: "Se requiere 'nombre', 'apellido', 'correoElectronico' y 'contrasenia', ",
             });
         }
 
-        const usuarioExistente = await usuariosService.getUsuarioByEmail(
-            req.body.correoElectronico
-        );
+        const usuarioExistente = await usuariosService.getUsuarioByEmail(req.body.correoElectronico);
 
         if (usuarioExistente) {
             return res.status(400).send({
@@ -119,5 +120,4 @@ export default class UsuariosController {
             });
         }
     };
-
 }

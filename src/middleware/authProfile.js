@@ -5,37 +5,40 @@ const verifyToken = (authHeader) => {
     var perfil = null;
 
     if (authHeader && authHeader.startsWith("Bearer")) {
-        jwt.verify(
-            authHeader.split(" ")[1],
-            process.env.TOKEN_SECRET,
-            (err, data) => {
-                if (err) {
-                    validated = false;
-                    return;
-                }
-                validated = true;
-                perfil = data;
+        jwt.verify(authHeader.split(" ")[1], process.env.TOKEN_SECRET, (err, data) => {
+            if (err) {
+                validated = false;
+                return;
             }
-        );
+            validated = true;
+            perfil = data;
+        });
     }
     return { validated, perfil };
 };
 
+const isLoginValidated = (req) => {
+    const validation = verifyToken(req.headers["authorization"]);
+    if (validation.validated) {
+        req.perfil = validation.perfil;
+        req.perfil.tipo = validation.perfil.tipo.toUpperCase();
+        return true;
+    }
+    return false;
+};
+
 export default class AuthProfile {
-    isLoginValidated = (req) => {
-        const validation = verifyToken(req.headers["authorization"]);
-        if (validation.validated) {
-            req.perfil = validation.perfil;
-            req.perfil.tipo = validation.perfil.tipo.toUpperCase();
-            return true;
-        }
-        return false;
+    isAuthenticated = async (req, res, next) => {
+        if (isLoginValidated(req)) return next();
+        return res.status(401).send({
+            status: "FAILED",
+            message: "No se ha autenticado el usuario",
+        });
     };
 
     isCliente = async (req, res, next) => {
-        if (this.isLoginValidated(req)) {
-            const tipo = req.perfil.tipo.toUpperCase();
-            if (tipo === "CLIENTE") {
+        if (isLoginValidated(req)) {
+            if (req.perfil.tipo === "CLIENTE") {
                 return next();
             }
         }
@@ -47,9 +50,8 @@ export default class AuthProfile {
     };
 
     isEmpleado = async (req, res, next) => {
-        if (this.isLoginValidated(req)) {
-            const tipo = req.perfil.tipo.toUpperCase();
-            if (tipo === "EMPLEADO") {
+        if (isLoginValidated(req)) {
+            if (req.perfil.tipo === "EMPLEADO") {
                 return next();
             }
         }
@@ -61,9 +63,8 @@ export default class AuthProfile {
     };
 
     isAdministrador = async (req, res, next) => {
-        if (this.isLoginValidated(req)) {
-            const tipo = req.perfil.tipo.toUpperCase();
-            if (tipo === "ADMINISTRADOR") {
+        if (isLoginValidated(req)) {
+            if (req.perfil.tipo === "ADMINISTRADOR") {
                 return next();
             }
         }
@@ -75,7 +76,7 @@ export default class AuthProfile {
     };
 
     isEmpleadoOrAdministrador = async (req, res, next) => {
-        if (this.isLoginValidated(req)) {
+        if (isLoginValidated(req)) {
             const tipo = req.perfil.tipo.toUpperCase();
             if (tipo === "ADMINISTRADOR" || tipo === "EMPLEADO") {
                 return next();
