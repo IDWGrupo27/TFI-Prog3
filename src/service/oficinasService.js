@@ -9,12 +9,29 @@ export default class OficinasService {
     getOficinaById = async (idOficina) => {
         try {
             const oficinaData = await oficinasDatabase.getOficinaById(idOficina);
-            oficinaData.empleados = await usuariosService.getUsuariosByIdOficina(idOficina);
-            if (oficinaData) return new Oficina(oficinaData);
-            else return null;
+            if (oficinaData) {
+                oficinaData.empleados = await usuariosService.getUsuariosByIdOficina(idOficina);
+                return new Oficina(oficinaData);
+            } else return null;
         } catch (error) {
             console.error(error);
             return null;
         }
+    };
+
+    getOficinaByIdUsuario = async (idUsuario) => {
+        const oficinaData = await oficinasDatabase.getOficinaByIdUsuario(idUsuario);
+        if (oficinaData) {
+            return new Oficina(oficinaData);
+        }
+        return null;
+    };
+
+    getOficinaByIdReclamo = async (idReclamo) => {
+        const oficinaData = await oficinasDatabase.getOficinaByIdReclamo(idReclamo);
+        if (oficinaData) {
+            return new Oficina(oficinaData);
+        }
+        return null;
     };
 }

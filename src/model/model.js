@@ -1,6 +1,6 @@
 export class Reclamo {
     /**
-     * @param {{idReclamo: number, asunto: string, descripcion: string, fechaCreado: Date, fechaFinalizado: Date, fechaCancelado: Date, idUsuarioCreador: number, nombreUsuarioCreador: string, apellidoUsuarioCreador: string, correoUsuarioCreador: string, tipoReclamo: string, estadoReclamo: string}}
+     * @param {{idReclamo: number, asunto: string, descripcion: string, fechaCreado: Date, fechaFinalizado: Date, fechaCancelado: Date, idUsuarioCreador: number, nombreUsuarioCreador: string, apellidoUsuarioCreador: string, correoUsuarioCreador: string, tipoReclamo: string, idOficina: number, estadoReclamo: string}}
      */
     constructor({
         idReclamo,
@@ -14,6 +14,7 @@ export class Reclamo {
         apellidoUsuarioCreador,
         correoUsuarioCreador,
         tipoReclamo,
+        idOficina,
         estadoReclamo,
     }) {
         this.idReclamo = idReclamo;
@@ -27,19 +28,21 @@ export class Reclamo {
         this.apellidoUsuarioCreador = apellidoUsuarioCreador;
         this.correoUsuarioCreador = correoUsuarioCreador;
         this.tipoReclamo = tipoReclamo;
+        this.idOficina = idOficina;
         this.estadoReclamo = estadoReclamo;
     }
 }
 
 export class Usuario {
     /**
-     * @param {{ idUsuario: number; nombre: string; apellido: string; correoElectronico: string; activo: boolean; tipo: string;}}
+     * @param {{ idUsuario: number; nombre: string; apellido: string; correoElectronico: string; idOficina: number; activo: boolean; tipo: string;}}
      */
-    constructor({ idUsuario, nombre, apellido, correoElectronico, activo, tipo }) {
+    constructor({ idUsuario, nombre, apellido, correoElectronico, idOficina, activo, tipo }) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correoElectronico = correoElectronico;
+        this.idOficina = idOficina;
         this.activo = activo;
         this.tipo = tipo;
     }

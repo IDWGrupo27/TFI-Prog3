@@ -1,7 +1,10 @@
 import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
+import OficinasService from "./oficinasService.js";
 
 const database = new ReclamosDatabase();
+
+const oficinasService = new OficinasService();
 
 export default class ReclamosService {
     getReclamoById = async (idReclamo) => {
@@ -35,9 +38,22 @@ export default class ReclamosService {
     /**
      * @returns {Promise<Reclamo[]>}
      */
-    getReclamosByClientId = async (idCliente) => {
+    getReclamosByIdCliente = async (idCliente) => {
         try {
-            const data = await database.getReclamosByClientId(idCliente);
+            const data = await database.getReclamosByIdCliente(idCliente);
+            return data.map((rd) => new Reclamo(rd));
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    /**
+     * @returns {Promise<Reclamo[]>}
+     */
+    getReclamosByIdOficina = async (idOficina) => {
+        try {
+            const data = await database.getReclamosByIdOficina(idOficina);
             return data.map((rd) => new Reclamo(rd));
         } catch (error) {
             console.error(error);
@@ -62,6 +78,8 @@ export default class ReclamosService {
                 return null;
             }
             const reclamo = await this.getReclamoById(idReclamo);
+            console.log(idReclamo);
+
             return reclamo;
         } catch (error) {
             console.error(error);

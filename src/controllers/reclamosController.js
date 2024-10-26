@@ -1,7 +1,9 @@
+import OficinasService from "../service/oficinasService.js";
 import ReclamosService from "../service/reclamosService.js";
 import { enviarCorreo } from "../utiles/correoElectronico.js";
 
 const reclamosService = new ReclamosService();
+const oficinasService = new OficinasService();
 
 export default class ReclamosController {
     getAllReclamos = async (req, res) => {
@@ -11,19 +13,37 @@ export default class ReclamosController {
 
     /** Devuelve los reclamos del cliente logueado */
     getReclamosByPerfil = async (req, res) => {
-        const reclamos = await reclamosService.getReclamosByClientId(req.perfil?.idUsuario);
+        const reclamos = await reclamosService.getReclamosByIdCliente(req.perfil?.idUsuario);
         console.log(reclamos);
         res.send({ status: "OK", reclamos });
     };
 
-    getReclamosByClientId = async (req, res) => {
-        const idCliente = req.params?.idCliente;
+    getReclamosByIdCliente = async (req, res) => {
+        const idUsuario = req.params?.idUsuario;
 
-        if (!idCliente) {
-            res.status(400).send({ message: "Debe ingresar un 'idCliente'" });
+        if (!idUsuario) {
+            res.status(400).send({ message: "Debe ingresar un 'idUsuario'" });
         }
 
-        const reclamos = await reclamosService.getReclamosByClientId(idCliente);
+        const reclamos = await reclamosService.getReclamosByIdCliente(idUsuario);
+
+        const resObj = {
+            status: "OK",
+            reclamos,
+        };
+        if (reclamos.length === 0) resObj.message = "No hay reclamos";
+
+        res.send(resObj);
+    };
+
+    getReclamosByIdOficina = async (req, res) => {
+        const idOficina = req.params?.idOficina;
+
+        if (!idOficina) {
+            res.status(400).send({ message: "Debe ingresar un 'idUsuario'" });
+        }
+
+        const reclamos = await reclamosService.getReclamosByIdOficina(idOficina);
 
         const resObj = {
             status: "OK",
@@ -130,48 +150,67 @@ export default class ReclamosController {
         });
     };
 
-    cancelarReclamo = async (req, res) => {
+    /** Si es cliente solo lo va a cancelar. Si es empleado puede cambiar a otros estados de reclamos de su oficina */
+    updateReclamo = async (req, res) => {
+        const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
         const idReclamo = req.params?.idReclamo;
+        const idReclamoEstado = req.body.idReclamoEstado;
 
-        if (idReclamo) {
-            const reclamo = await reclamosService.getReclamoById(idReclamo);
-            if (reclamo?.idUsuarioCreador !== req.perfil?.idUsuario) {
-                return res.status(403).send({
-                    status: "FAILED",
-                    mensaje: "No tiene permisos para actualizar este reclamo",
-                });
+        var updateData = null;
+
+        if (idReclamo && idReclamoEstado) {
+            if (req.perfil?.tipo === "CLIENTE") {
+                const reclamo = await reclamosService.getReclamoById(idReclamo);
+                if (reclamo?.idUsuarioCreador === req.perfil?.idUsuario && idReclamoEstado === 3) {
+                    updateData = {
+                        fechaCancelado: fecha,
+                        idReclamoEstado,
+                    };
+                }
+            } else if (req.perfil?.tipo === "EMPLEADO") {
+                const oficinaEmpleado = await oficinasService.getOficinaByIdUsuario(req.perfil?.idUsuario);
+                const oficinaReclamo = await oficinasService.getOficinaByIdReclamo(idReclamo);
+                if (oficinaEmpleado?.idOficina === oficinaReclamo?.idOficina) {
+                    updateData = {
+                        fechaFinalizado: idReclamoEstado === 4 ? fecha : null,
+                        idReclamoEstado,
+                    };
+                } else {
+                    return res.status(403).send({ message: "El reclamo no pertenece a su oficina" });
+                }
             }
 
-            const fecha = new Date().toISOString().slice(0, 19).replace("T", " ");
-            try {
-                const reclamoActualizado = await reclamosService.updateReclamo(idReclamo, {
-                    fechaCancelado: fecha,
-                    idReclamoEstado: 3,
-                });
-
-                if (reclamoActualizado?.affectedRows === 0) {
-                    return res.status(400).send({
+            if (updateData) {
+                try {
+                    const reclamoActualizado = await reclamosService.updateReclamo(idReclamo, updateData);
+                    if (!reclamoActualizado) {
+                        return res.status(400).send({
+                            status: "FAILED",
+                            mensaje: "No se pudo actualizar el reclamo",
+                        });
+                    }
+                    return res.status(201).send({
+                        status: "OK",
+                        data: await reclamosService.getReclamoById(idReclamo),
+                    });
+                } catch (e) {
+                    console.log(e);
+                    return res.status(500).send({
                         status: "FAILED",
-                        mensaje: "No se pudo actualizar el estado del reclamo!",
+                        message: "Error al actualizar el reclamo",
                     });
                 }
-
-                res.status(201).send({
-                    status: "OK",
-                    data: await reclamosService.getReclamoById(idReclamo),
-                });
-            } catch (e) {
-                console.log(e);
-                res.status(500).send({
-                    status: "FAILED",
-                    message: "Error al actualizar el reclamo",
-                });
             }
+
+            return res.status(403).send({
+                status: "FAILED",
+                mensaje: "No tiene permisos para actualizar este reclamo",
+            });
         } else {
-            res.status(404).send({
+            res.status(400).send({
                 status: "FAILED",
                 data: {
-                    error: "El parámetro idReclamo es inválido.",
+                    error: "Se requiere idReclamo y { idReclamoEstado }.",
                 },
             });
         }

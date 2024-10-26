@@ -6,7 +6,7 @@ export default class UsuariosDatabase {
     sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idTipoUsuario";
 
     getUsuarioById = async (idUsuario) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE idUsuario = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE u.idUsuario = ?;`;
         const [usuarios] = await connection.query(sql, [idUsuario]);
         if (!usuarios || usuarios.length === 0) {
             return null;
@@ -30,7 +30,7 @@ export default class UsuariosDatabase {
     };
 
     getUsuariosByIdOficina = async (idOficina) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} INNER JOIN usuarios_oficinas uo ON uo.idUsuario = u.idUsuario WHERE idOficina = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE idOficina = ?;`;
         const [usuarios] = await connection.query(sql, [idOficina]);
         return usuarios;
     };

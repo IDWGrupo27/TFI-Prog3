@@ -5,15 +5,15 @@ import AuthProfile from "../middleware/authProfile.js";
 import ReclamosController from "../controllers/reclamosController.js";
 
 const auth = new AuthProfile();
-const controller = new ReclamosController();
+const reclamosController = new ReclamosController();
 
-reclamos.get("/", auth.isEmpleadoOrAdministrador, controller.getAllReclamos);
-reclamos.get("/cliente/:idCliente", auth.isEmpleadoOrAdministrador, controller.getReclamosByClientId);
-reclamos.get("/mis-reclamos", auth.isCliente, controller.getReclamosByPerfil);
+reclamos.get("/", auth.isEmpleadoOrAdministrador, reclamosController.getAllReclamos);
+reclamos.post("/", auth.isCliente, reclamosController.createReclamo);
 
-reclamos.post("/", auth.isCliente, controller.createReclamo);
-reclamos.get("/:idReclamo", auth.isCliente, controller.getReclamoById);
-reclamos.patch("/cancelar/:idReclamo", auth.isCliente, controller.cancelarReclamo);
-reclamos.delete("/:idReclamo", auth.isEmpleadoOrAdministrador, controller.deleteReclamoById);
+reclamos.get("/mis-reclamos", auth.isCliente, reclamosController.getReclamosByPerfil);
+
+reclamos.get("/:idReclamo", auth.isAuthenticated, reclamosController.getReclamoById);
+reclamos.patch("/:idReclamo", auth.isAuthenticated, reclamosController.updateReclamo);
+reclamos.delete("/:idReclamo", auth.isAdministrador, reclamosController.deleteReclamoById);
 
 export default reclamos;
