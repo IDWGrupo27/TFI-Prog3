@@ -20,7 +20,7 @@ export default class ReclamosTipoDatabase {
     };
 
     deleteReclamosTipoById = async (idReclamosTipo) => {
-        const sql = "DELETE FROM reclamos_tipo WHERE idReclamosTipo = ?";
+        const sql = "UPDATE reclamos_tipo SET activo = 0 WHERE idReclamosTipo = ?";
         const [result] = await connection.query(sql, [idReclamosTipo]);
         return result;
     };

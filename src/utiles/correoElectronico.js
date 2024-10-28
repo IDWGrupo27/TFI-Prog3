@@ -4,12 +4,16 @@ import handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import ReclamosService from "../service/reclamosService.js";
+
 
 const usuariosService = new UsuariosService();
 
-//Por el momento solo envia correos con los reclamos nuevos creados
+//Envia el correo si el estado del reclamo es distinto al que se encuentra en la BBDD
 
-export const enviarCorreo = async (reclamo) => {
+export const enviarCorreo = async (idReclamo, reclamoEstadoPrevio) => {
+    const reclamosService = new ReclamosService();
+
     const fileName = fileURLToPath(import.meta.url);
     const dirName = path.dirname(fileName);
     const plantilla = fs.readFileSync(
@@ -17,40 +21,50 @@ export const enviarCorreo = async (reclamo) => {
         "utf-8"
     );
 
-    let usuario = await usuariosService.getUsuarioById(
-        reclamo.idUsuarioCreador
-    );
-    let conseguirCorreo = usuario.correoElectronico;
+    const reclamo = await reclamosService.getReclamoById(idReclamo);
 
-    const templete = handlebars.compile(plantilla);
 
-    const datos = {
-        nombre: usuario.nombre,
-        estadoFinal: "creado",
-    };
+    if (reclamoEstadoPrevio.estadoReclamo === reclamo.estadoReclamo) {
+        return
+    } else {
 
-    const correo = templete(datos);
+        let conseguirCorreo = reclamo.correoUsuarioCreador;
 
-    const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-            user: process.env.EMAIL_NM,
-            pass: process.env.PASSWORD_NM,
-        },
-    });
+        const templete = handlebars.compile(plantilla);
 
-    const mailOptions = {
-        from: process.env.EMAIL_NM,
-        to: conseguirCorreo,
-        subject: "NOTIFICACION DE RECLAMO",
-        html: correo,
-    };
+        const datos = {
+            nombre: reclamo.nombreUsuarioCreador,
+            estadoInicial: reclamoEstadoPrevio.estadoReclamo,
+            estadoFinal: reclamo.estadoReclamo,
+        };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error("Error sending email: ", error);
-        } else {
-            console.log("Email sent: ", info.response);
-        }
-    });
+        const correo = templete(datos);
+
+        const transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: process.env.EMAIL_NM,
+                pass: process.env.PASSWORD_NM,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_NM,
+            to: conseguirCorreo,
+            subject: "NOTIFICACION DE RECLAMO",
+            html: correo,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email: ", error);
+            } else {
+                console.log("Email sent: ", info.response);
+            }
+        });
+    }
+
+
 };
+
+
