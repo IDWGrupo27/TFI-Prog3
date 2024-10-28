@@ -61,12 +61,12 @@ export class Oficina {
     }
 }
 
-export class ReclamoTipo {
+export class ReclamosTipo {
     /**
-     * @param {{ idReclamoTipo: number; descripcion: string; activo: boolean;}}
+     * @param {{ idReclamosTipo: number; descripcion: string; activo: boolean;}}
      */
-    constructor({ idReclamoTipo, descripcion, activo }) {
-        this.idReclamoTipo = idReclamoTipo;
+    constructor({ idReclamosTipo, descripcion, activo }) {
+        this.idReclamosTipo = idReclamosTipo;
         this.descripcion = descripcion;
         this.activo = activo;
     }
