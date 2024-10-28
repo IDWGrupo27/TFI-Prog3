@@ -1,10 +1,7 @@
 import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
-import OficinasService from "./oficinasService.js";
 
 const database = new ReclamosDatabase();
-
-const oficinasService = new OficinasService();
 
 export default class ReclamosService {
     getReclamoById = async (idReclamo) => {

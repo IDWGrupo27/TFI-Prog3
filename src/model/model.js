@@ -60,3 +60,14 @@ export class Oficina {
         this.empleados = empleados;
     }
 }
+
+export class ReclamoTipo {
+    /**
+     * @param {{ idReclamoTipo: number; descripcion: string; activo: boolean;}}
+     */
+    constructor({ idReclamoTipo, descripcion, activo }) {
+        this.idReclamoTipo = idReclamoTipo;
+        this.descripcion = descripcion;
+        this.activo = activo;
+    }
+}
