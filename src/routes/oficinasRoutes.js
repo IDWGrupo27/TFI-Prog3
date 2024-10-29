@@ -9,7 +9,12 @@ const oficinasController = new OficinasController();
 const reclamosController = new ReclamosController();
 const auth = new AuthProfile();
 
-oficinas.get("/:idOficina", auth.isEmpleadoOrAdministrador, oficinasController.getOficinaById);
+// deberia ser Administrador
+oficinas.get("/", auth.isAdministrador, oficinasController.getAllOficina);
+oficinas.get("/:idOficina", auth.isAdministrador, oficinasController.getOficinaById);
+oficinas.post("/", auth.isAdministrador, oficinasController.createOficina)
+oficinas.patch("/:idOficina", auth.isAdministrador, oficinasController.updateOficina)
+
 oficinas.get("/:idOficina/reclamos", auth.isEmpleadoOrAdministrador, reclamosController.getReclamosByIdOficina);
 
 export default oficinas;

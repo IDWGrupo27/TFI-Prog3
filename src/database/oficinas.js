@@ -14,6 +14,24 @@ export default class OficinasDatabase {
         return oficinas[0];
     };
 
+    getAllOficina = async() => {
+        const sql = `SELECT ${this.sqlOficinasColumns} FROM oficinas WHERE activo = 1;`;
+        const [oficinas] = await connection.query(sql);
+        return oficinas
+    };
+
+    createOficina = async(nombre, idTipoReclamo) => {
+        const sql = `INSERT INTO oficinas (nombre, idReclamoTipo, activo) VALUES (?, ?, ?)`;
+        const [oficinaNueva] = await connection.query(sql, [nombre, idTipoReclamo, 1]);
+        return oficinaNueva; 
+    };
+
+    updateOficina = async(idOficina, datos) => {
+        const sql = `UPDATE oficinas SET ? WHERE idOficina = ?`;
+        const [oficinaModificada] = await connection.query(sql, [datos, idOficina]);
+        return oficinaModificada
+    }
+
     getOficinaByIdUsuario = async (idUsuario) => {
         const sql = `SELECT idOficina FROM usuarios_oficinas WHERE idUsuario = ?;`;
         const [data] = await connection.query(sql, [idUsuario]);
