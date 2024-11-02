@@ -54,6 +54,12 @@ export default class OficinasDatabase {
         return data[0]
     }; 
 
+    getOficinaUsuario = async(idOficina) => {
+        const sql = `SELECT idUsuario FROM usuarios_oficinas WHERE idOficina = ? AND activo = 1;`
+        const [result] = await connection.query(sql, [idOficina]);
+        return result;
+    }
+
     getOficinaByIdReclamo = async (idReclamo) => {
         const sql = `SELECT o.idOficina FROM oficinas o INNER JOIN reclamos r ON o.idReclamoTipo = r.idReclamoTipo WHERE r.idReclamo = ?;`;
         const [data] = await connection.query(sql, [idReclamo]);

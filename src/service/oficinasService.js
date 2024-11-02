@@ -89,6 +89,14 @@ export default class OficinasService {
             }
         }
 
+        const existeOficinaUsuario = await oficinasDatabase.getOficinaByIdUsuario(idOficina);
+        if(!existeOficinaUsuario){
+            return {
+                estado: false,
+                mensaje: "No se puede eliminar la oficina ya qu xiste la relacion usuarios_oficina"
+            }
+        }
+        
         const oficinaEliminada = await oficinasDatabase.deleteOficina(idOficina)
         if(oficinaEliminada.affectedRows === 1){
             return {
