@@ -3,10 +3,10 @@ import { connection } from "./connection.js";
 export default class UsuariosDatabase {
     // Sentencias que se repiten en varias consultas
     sqlUsuarioColumns = "u.idUsuario, u.nombre, u.apellido, u.correoElectronico, u.activo, ut.descripcion AS tipo";
-    sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idTipoUsuario";
+    sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idUsuarioTipo";
 
     getUsuarioById = async (idUsuario) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE u.idUsuario = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE u.idUsuario = ? AND u.activo = 1;`;
         const [usuarios] = await connection.query(sql, [idUsuario]);
         if (!usuarios || usuarios.length === 0) {
             return null;
