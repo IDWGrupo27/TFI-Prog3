@@ -32,4 +32,16 @@
 
 `GET /oficinas/:idOficina` - Busca una oficina por ID
 
+`GET /oficinas` - Devuelve todas las oficinas activas
+
+`POST /oficinas` - Crear oficinas
+
+`PATCH /oficinas/:idOficina` - Actualiza la oficina.
+
+`PATCH /oficinas/eliminar/:idOficina` - Elimina la oficina
+
+`POST /oficinas/agregar-empleados` - Agrega uno o varios empleados a la oficina
+
+`POST /oficinas/eliminar-oficinas` - Elimina uno o varios empleados en la oficina 
+
 `GET /oficinas/:idOficina/reclamos` - Devuelve los reclamos atendidos en la oficina
