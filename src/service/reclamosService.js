@@ -2,7 +2,6 @@ import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
 import { enviarCorreo } from "../utiles/correoElectronico.js";
 
-
 const database = new ReclamosDatabase();
 
 export default class ReclamosService {
@@ -71,17 +70,16 @@ export default class ReclamosService {
     };
 
     updateReclamo = async (idReclamo, dataReclamo) => {
-        const reclamoEstadoPrevio = await database.getReclamoById(idReclamo);
+        const reclamoEstadoPrevio = await this.getReclamoById(idReclamo);
 
         try {
             const data = await database.updateReclamo(idReclamo, dataReclamo);
             if (data?.affectedRows === 0) {
                 return null;
             }
+
             const reclamo = await this.getReclamoById(idReclamo);
             enviarCorreo(idReclamo, reclamoEstadoPrevio);
-            console.log(idReclamo);
-
 
             return reclamo;
         } catch (error) {

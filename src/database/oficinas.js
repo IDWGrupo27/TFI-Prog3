@@ -14,25 +14,25 @@ export default class OficinasDatabase {
         return oficinas[0];
     };
 
-    getAllOficina = async() => {
-        const sql = `SELECT ${this.sqlOficinasColumns} FROM oficinas WHERE activo = 1;`;
+    getAllOficinas = async () => {
+        const sql = `SELECT ${this.sqlOficinasColumns} FROM oficinas o ${this.sqlOficinaJoinTipo} WHERE o.activo = 1;`;
         const [oficinas] = await connection.query(sql);
-        return oficinas
+        return oficinas;
     };
 
-    createOficina = async(nombre, idTipoReclamo) => {
+    createOficina = async (nombre, idTipoReclamo) => {
         const sql = `INSERT INTO oficinas (nombre, idReclamoTipo, activo) VALUES (?, ?, ?)`;
         const [oficinaNueva] = await connection.query(sql, [nombre, idTipoReclamo, 1]);
-        return oficinaNueva; 
+        return oficinaNueva;
     };
 
-    updateOficina = async(idOficina, datos) => {
+    updateOficina = async (idOficina, datos) => {
         const sql = `UPDATE oficinas SET ? WHERE idOficina = ?`;
         const [oficinaModificada] = await connection.query(sql, [datos, idOficina]);
-        return oficinaModificada
+        return oficinaModificada;
     };
 
-    deleteOficina = async(idOficina) => {
+    deleteOficina = async (idOficina) => {
         const sql = `UPDATE oficinas SET activo = 0 WHERE idOficina = ?`;
         const [oficinaEliminada] = await connection.query(sql, [idOficina]);
         return oficinaEliminada;
@@ -48,17 +48,17 @@ export default class OficinasDatabase {
         return oficinaData;
     };
 
-    getIdUsuarioOficina = async(idOficina, idUsuario) => {
-        const sql = `SELECT idUsuarioOficina FROM usuarios_oficinas WHERE idUsuario = ? AND idOficina = ? AND activo = 1;`
+    getIdUsuarioOficina = async (idOficina, idUsuario) => {
+        const sql = `SELECT idUsuarioOficina FROM usuarios_oficinas WHERE idUsuario = ? AND idOficina = ? AND activo = 1;`;
         const [data] = await connection.query(sql, [idUsuario, idOficina]);
-        return data[0]
-    }; 
+        return data[0];
+    };
 
-    getOficinaUsuario = async(idOficina) => {
-        const sql = `SELECT idUsuario FROM usuarios_oficinas WHERE idOficina = ? AND activo = 1;`
+    getOficinaUsuario = async (idOficina) => {
+        const sql = `SELECT idUsuario FROM usuarios_oficinas WHERE idOficina = ? AND activo = 1;`;
         const [result] = await connection.query(sql, [idOficina]);
         return result;
-    }
+    };
 
     getOficinaByIdReclamo = async (idReclamo) => {
         const sql = `SELECT o.idOficina FROM oficinas o INNER JOIN reclamos r ON o.idReclamoTipo = r.idReclamoTipo WHERE r.idReclamo = ?;`;
@@ -70,51 +70,50 @@ export default class OficinasDatabase {
         return oficinaData;
     };
 
-    agregarEmpleados = async(idOficina, empleados) => {
+    agregarEmpleados = async (idOficina, empleados) => {
         let agregados = 0;
-        try{
+        try {
             await connection.beginTransaction();
-            for (const empleado of empleados){
+            for (const empleado of empleados) {
                 const sql = `INSERT INTO usuarios_oficinas (idUsuario, idOficina, activo) VALUES (?, ?, 1);`;
                 const result = connection.query(sql, [empleado.idUsuario, idOficina]);
                 agregados += 1;
             }
             await connection.commit();
             return {
-                estado: true, 
-                mensaje: `Se agergaron ${agregados} empleados `
+                estado: true,
+                mensaje: `Se agergaron ${agregados} empleados `,
             };
-        }catch (error){
+        } catch (error) {
             await connection.rollback();
-            console.log(error)
-            return { 
-                estado: false, 
-                mensaje: 'Error al agergar empleados a la oficina.' 
+            console.log(error);
+            return {
+                estado: false,
+                mensaje: "Error al agergar empleados a la oficina.",
             };
         }
-    
     };
 
-    quitarEmpleados = async(idOficinaUsuario) => {
+    quitarEmpleados = async (idOficinaUsuario) => {
         let quitados = 0;
-        try{
+        try {
             await connection.beginTransaction();
-            for (const id of idOficinaUsuario){
+            for (const id of idOficinaUsuario) {
                 const sql = `UPDATE usuarios_oficinas SET activo = 0 WHERE idUsuarioOficina = ? `;
                 const result = connection.query(sql, [id.idUsuarioOficina]);
                 quitados += 1;
             }
             await connection.commit();
             return {
-                estado: true, 
-                mensaje: `Se quitaron ${quitados} empleados en la oficina`
+                estado: true,
+                mensaje: `Se quitaron ${quitados} empleados en la oficina`,
             };
-        }catch (error){
+        } catch (error) {
             await connection.rollback();
-            console.log(error)
-            return { 
-                estado: false, 
-                mensaje: 'Error al quitar empleados en la oficina.' 
+            console.log(error);
+            return {
+                estado: false,
+                mensaje: "Error al quitar empleados en la oficina.",
             };
         }
     };

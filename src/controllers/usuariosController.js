@@ -44,11 +44,25 @@ export default class UsuariosController {
         });
     };
 
+    getAllEmpleados = async (req, res) => {
+        const usuarios = await usuariosService.getUsuariosByIdTipoEmpleado(2);
+        res.send({
+            status: "OK",
+            usuarios,
+        });
+    };
+
     createUsuario = async (req, res) => {
-        if (!req.body.nombre || !req.body.apellido || !req.body.correoElectronico || !req.body.contrasenia) {
+        if (
+            !req.body.nombre ||
+            !req.body.apellido ||
+            !req.body.correoElectronico ||
+            !req.body.contrasenia ||
+            !req.body.idTipoUsuario
+        ) {
             return res.status(400).send({
                 status: "FAILED",
-                message: "Se requiere 'nombre', 'apellido', 'correoElectronico' y 'contrasenia', ",
+                message: "Se requiere 'nombre', 'apellido', 'correoElectronico', 'contrasenia' y 'idTipoUsuario', ",
             });
         }
 
@@ -65,6 +79,7 @@ export default class UsuariosController {
                 apellido: req.body.apellido,
                 correoElectronico: req.body.correoElectronico,
                 contrasenia: req.body.contrasenia,
+                idTipoUsuario: req.body.idTipoUsuario,
             });
 
             if (usuario) {
@@ -79,6 +94,64 @@ export default class UsuariosController {
                 message: "Error al crear el usuario",
             });
         }
+    };
+
+    deleteUsuario = async (req, res) => {
+        if (!req.params.idUsuario) {
+            return res.status(400).send({ message: "Se requiere 'idUsuario'" });
+        }
+        const deleted = await usuariosService.deleteUsuario(req.params.idUsuario);
+        if (deleted) {
+            res.send({ status: "OK", deleted });
+        } else {
+            res.status(400).send({ status: "FAILED", message: "Error al eliminar el empleado" });
+        }
+    };
+
+    updateUsuario = async (req, res) => {
+        const updateObj = {};
+        const camposPermitidos = ["nombre", "apellido", "correoElectronico", "activo", "idUsuarioTipo"];
+        camposPermitidos.forEach((key) => {
+            if (req.body[key] !== undefined && req.body[key] !== null) {
+                updateObj[key] = req.body[key];
+            }
+        });
+        if (!req.params.idUsuario || !Object.keys(updateObj).length) {
+            return res.status(400).send({
+                message:
+                    "Se requiere 'idUsuario' y los campos opcionales a cambiar: {nombre, apellido, correoElectronico, activo, idUsuarioTipo}",
+            });
+        }
+
+        const updatedUsuario = await usuariosService.updateUsuario(req.params.idUsuario, updateObj);
+        if (updatedUsuario) {
+            if (updatedUsuario.tipo.toUpperCase() === "EMPLEADO") {
+                await usuariosService.updateUsuariosOficinasActivo(updatedUsuario.idUsuario, 0);
+            }
+            return res.send({ status: "OK", usuario: updatedUsuario });
+        }
+
+        res.status(400).send({ status: "FAILED", message: "Error al actualizar el usuario" });
+    };
+
+    updateClientePerfil = async (req, res) => {
+        const updateObj = {};
+        const camposPermitidos = ["nombre", "apellido", "correoElectronico"];
+        camposPermitidos.forEach((key) => {
+            if (req.body[key] !== undefined && req.body[key] !== null) {
+                updateObj[key] = req.body[key];
+            }
+        });
+        if (!Object.keys(updateObj).length) {
+            return res.status(400).send({
+                message: "Se requieren los campos opcionales a cambiar: {nombre, apellido, correoElectronico}",
+            });
+        }
+        const updatedUsuario = await usuariosService.updateUsuario(req.perfil?.idUsuario, updateObj);
+        if (updatedUsuario) {
+            return res.send({ status: "OK", usuario: updatedUsuario });
+        }
+        res.status(400).send({ status: "FAILED", message: "Error al actualizar la información del perfil" });
     };
 
     loginUsuario = async (req, res) => {

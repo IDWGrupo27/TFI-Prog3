@@ -4,44 +4,58 @@
 
 ### Usuarios
 
-`GET /usuarios` - Devuevle todos los usuarios
+`GET /api/usuarios` - Devuevle todos los usuarios
 
-`GET /usuarios/mi-perfil` - Devuevle la información del usuario logueado
+`GET /api/usuarios/mi-perfil` - Devuevle la información del usuario logueado
 
-`GET /usuarios/:idUsuario` - Busca un usuario por ID
+`PATCH /api/usuarios/mi-perfil` - Permite modificar nombre, apellido y correo electrónico
 
-`GET /usuarios/:idUsuario/reclamos` - Devuevle todos los reclamos del usuario
+`GET /api/usuarios/:idUsuario` - Busca un usuario por ID
 
-`POST /usuarios/login` - Devuelve un token bearer JWT si coincide el usuario y contraseña
+`PATCH /api/usuarios/:idUsuario` - Actualiza la información de un usuario: nombre, apellido, correoElectronico, activo, idUsuarioTipo
 
-`POST /usuarios/register` - Crea un usuario
+`GET /api/usuarios/:idUsuario/reclamos` - Devuevle todos los reclamos del usuario
+
+`POST /api/usuarios/login` - Devuelve un token bearer JWT si coincide el usuario y contraseña
+
+`POST /api/usuarios/register` - Crea un usuario
 
 ### Reclamos
 
-`GET /reclamos` - Devuevle todos los reclamos
+`GET /api/reclamos` - Devuevle todos los reclamos
 
-`POST /reclamos` - Crea un nuevo reclamo
+`POST /api/reclamos` - Crea un nuevo reclamo
 
-`GET /reclamos/mis-reclamos` - Devuelve los reclamos del usuario logueado
+`GET /api/reclamos/mis-reclamos` - Devuelve los reclamos del usuario logueado
 
-`GET /reclamos/:idReclamo` - Busca un reclamo por ID
+`GET /api/reclamos/:idReclamo` - Busca un reclamo por ID
 
-`PATCH /reclamos/:idReclamo` - Actualiza el estado de un reclamo
+`PATCH /api/reclamos/:idReclamo` - Actualiza el estado de un reclamo - Los clientes solo pueden pasarlo a "Cancelado" si fue creado por ellos, los empleados pueden cambiarlo a los demás estados si el reclamo se atiende en su oficina.
+
+### Reclamos Tipo
+
+`GET /api/reclamos-tipo` - Devuevle todos los tipos de reclamo
+
+`POST /api/reclamos-tipo` - Agrega un tipo de reclamos
+
+`GET /api/reclamos-tipo/:idReclamosTipo` - Devuevle todos los tipos de reclamos
+
+`PATCH /api/reclamos-tipo/:idReclamosTipo` - Actualiza un tipo de reclamo
 
 ### Oficinas
 
-`GET /oficinas/:idOficina` - Busca una oficina por ID
+`GET /api/oficinas/:idOficina` - Busca una oficina por ID
 
-`GET /oficinas` - Devuelve todas las oficinas activas
+`GET /api/oficinas` - Devuelve todas las oficinas activas
 
-`POST /oficinas` - Crear oficinas
+`POST /api/oficinas` - Crear oficinas
 
-`PATCH /oficinas/:idOficina` - Actualiza la oficina.
+`PATCH /api/oficinas/:idOficina` - Actualiza la oficina.
 
-`PATCH /oficinas/eliminar/:idOficina` - Elimina la oficina
+`PATCH /api/oficinas/eliminar/:idOficina` - Elimina la oficina
 
-`POST /oficinas/agregar-empleados` - Agrega uno o varios empleados a la oficina
+`POST /api/oficinas/agregar-empleados` - Agrega uno o varios empleados a la oficina
 
-`POST /oficinas/eliminar-oficinas` - Elimina uno o varios empleados en la oficina 
+`POST /api/oficinas/eliminar-oficinas` - Elimina uno o varios empleados en la oficina
 
-`GET /oficinas/:idOficina/reclamos` - Devuelve los reclamos atendidos en la oficina
+`GET /api/oficinas/:idOficina/reclamos` - Devuelve los reclamos atendidos en la oficina

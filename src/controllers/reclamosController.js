@@ -186,11 +186,12 @@ export default class ReclamosController {
                             status: "FAILED",
                             mensaje: "No se pudo actualizar el reclamo",
                         });
+                    } else {
+                        return res.status(201).send({
+                            status: "OK",
+                            data: await reclamosService.getReclamoById(idReclamo),
+                        });
                     }
-                    return res.status(201).send({
-                        status: "OK",
-                        data: await reclamosService.getReclamoById(idReclamo),
-                    });
                 } catch (e) {
                     console.log(e);
                     return res.status(500).send({

@@ -14,7 +14,7 @@ export default class ReclamosDatabase {
     rt.descripcion AS tipoReclamo,
     re.descripcion AS estadoReclamo`;
     sqlReclamoJoinUsuarios = "INNER JOIN usuarios u ON r.idUsuarioCreador = u.idUsuario";
-    sqlReclamoJoinEstado = "INNER JOIN reclamos_estado re ON r.idReclamoEstado = re.idReclamosEstado";
+    sqlReclamoJoinEstado = "INNER JOIN reclamos_estado re ON r.idReclamoEstado = re.idReclamoEstado";
     sqlReclamoJoinTipo = "INNER JOIN reclamos_tipo rt ON r.idReclamoTipo = rt.idReclamosTipo";
 
     getAllReclamos = async () => {

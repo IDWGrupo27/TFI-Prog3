@@ -4,9 +4,9 @@ import UsuariosDatabase from "../database/usuarios.js";
 const usuariosDatabase = new UsuariosDatabase();
 
 export default class UsuariosService {
-    getUsuarioById = async (idUsuario) => {
+    getUsuarioById = async (idUsuario, inactivo = false) => {
         try {
-            const data = await usuariosDatabase.getUsuarioById(idUsuario);
+            const data = await usuariosDatabase.getUsuarioById(idUsuario, inactivo);
             if (data) return new Usuario(data);
             else return null;
         } catch (error) {
@@ -42,6 +42,19 @@ export default class UsuariosService {
     /**
      * @returns {Promise<Usuario[]>}
      */
+    getUsuariosByIdTipoEmpleado = async (id) => {
+        try {
+            const data = await usuariosDatabase.getUsuariosByIdTipoEmpleado(id);
+            return data.map((u) => new Usuario(u));
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    /**
+     * @returns {Promise<Usuario[]>}
+     */
     getUsuariosByIdOficina = async (idOficina) => {
         try {
             const data = await usuariosDatabase.getUsuariosByIdOficina(idOficina);
@@ -64,8 +77,32 @@ export default class UsuariosService {
             }
             return null;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return null;
+        }
+    };
+
+    updateUsuario = async (idUsuario, fields) => {
+        try {
+            const result = await usuariosDatabase.updateUsuario(idUsuario, fields);
+            if (result.affectedRows === 1) {
+                return await this.getUsuarioById(idUsuario, true);
+            }
+            return null;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
+
+    updateUsuariosOficinasActivo = async (idUsuario, activo) => {
+        try {
+            const result = await usuariosDatabase.updateUsuariosOficinasActivo(idUsuario, activo);
+            if (result.affectedRows === 1) return true;
+            return false;
+        } catch (error) {
+            console.error(error);
+            return false;
         }
     };
 

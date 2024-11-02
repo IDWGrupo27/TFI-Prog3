@@ -5,7 +5,6 @@ const oficinasService = new OficinasService();
 //const reclamoTipoService = new ReclamosTipoService();
 
 export default class OficinasController {
-
     getOficinaById = async (req, res) => {
         if (!req.params.idOficina) {
             return res.status(400).send({
@@ -15,7 +14,7 @@ export default class OficinasController {
         }
 
         const oficina = await oficinasService.getOficinaById(req.params.idOficina);
-        
+
         if (oficina) {
             return res.send({
                 status: "OK",
@@ -29,9 +28,9 @@ export default class OficinasController {
         });
     };
 
-    getAllOficina = async (req, res) => {
-        const oficina = await oficinasService.getAllOficina();
-        if (!oficina) {
+    getAllOficinas = async (req, res) => {
+        const oficinas = await oficinasService.getAllOficinas();
+        if (!oficinas) {
             res.status(404).send({
                 status: "FAILED",
                 error: `No se encontraron oficinas activas`,
@@ -40,12 +39,11 @@ export default class OficinasController {
 
         return res.send({
             status: "OK",
-            oficina,
+            oficinas,
         });
     };
 
-    createOficina = async(req, res) => {
-
+    createOficina = async (req, res) => {
         const datos = req.body;
         if (Object.keys(datos).length === 0) {
             return res.status(400).send({
@@ -54,33 +52,32 @@ export default class OficinasController {
             });
         }
 
-        try{
+        try {
             const crearOficina = await oficinasService.createOficina(datos);
-            if(crearOficina.estado){
+            if (crearOficina.estado) {
                 res.status(201).send({
                     estado: "OK",
                     mensaje: crearOficina.mensaje,
-                    data: crearOficina.datos    
-                })
+                    data: crearOficina.datos,
+                });
                 return;
-            }else{
+            } else {
                 res.status(400).send({
                     status: "FAILED",
                     mensaje: crearOficina.mensaje,
                 });
             }
-        }catch(e){
+        } catch (e) {
             res.status(500).send({
                 estado: "Falla",
-                mensaje: "Error interno servidor"
-            })
+                mensaje: "Error interno servidor",
+            });
         }
     };
 
-    updateOficina = async(req, res) => {
-        
+    updateOficina = async (req, res) => {
         const idOficina = req.params.idOficina;
-        if(idOficina === undefined){
+        if (idOficina === undefined) {
             return res.status(400).send({
                 status: "FAILED",
                 error: "El parámetro idOficina no puede ser vacío",
@@ -88,38 +85,37 @@ export default class OficinasController {
         }
 
         const datos = req.body;
-        if(Object.keys(datos).length === 0){
+        if (Object.keys(datos).length === 0) {
             return res.status(400).send({
                 status: "FAILED",
                 error: "No se enviaron datos para ser modificados",
             });
         }
 
-        try{
-            const oficinaModificada = await oficinasService.updateOficina(idOficina, datos)
-            if(oficinaModificada.estado){
+        try {
+            const oficinaModificada = await oficinasService.updateOficina(idOficina, datos);
+            if (oficinaModificada.estado) {
                 res.status(200).send({
                     estado: "OK",
-                    mensaje: oficinaModificada.mensaje
-                })
-            }else{
+                    mensaje: oficinaModificada.mensaje,
+                });
+            } else {
                 res.status(404).send({
                     estado: "FAILED",
-                    mensaje: oficinaModificada.mensaje
-                })
+                    mensaje: oficinaModificada.mensaje,
+                });
             }
-        } catch(e) {
+        } catch (e) {
             res.status(500).send({
                 estado: "Falla",
-                mensaje: "Error interno servidor"
-            })
+                mensaje: "Error interno servidor",
+            });
         }
-        
     };
 
-    deleteOficina = async(req, res) => {
+    deleteOficina = async (req, res) => {
         const idOficina = req.params.idOficina;
-        if(idOficina === undefined){
+        if (idOficina === undefined) {
             return res.status(400).send({
                 status: "FAILED",
                 error: "El parámetro idOficina no puede ser vacío",
@@ -127,105 +123,107 @@ export default class OficinasController {
         }
 
         try {
-            const eliminarOficina = await oficinasService.deleteOficina(idOficina)
-            if(eliminarOficina.estado){
+            const eliminarOficina = await oficinasService.deleteOficina(idOficina);
+            if (eliminarOficina.estado) {
                 res.status(200).send({
                     estado: "OK",
-                    mensaje: eliminarOficina.mensaje
-                })
-            }else{
+                    mensaje: eliminarOficina.mensaje,
+                });
+            } else {
                 res.status(404).send({
                     estado: "FAILED",
-                    mensaje: eliminarOficina.mensaje
-                })
+                    mensaje: eliminarOficina.mensaje,
+                });
             }
         } catch (error) {
             res.status(500).send({
                 estado: "Falla",
-                mensaje: "Error interno servidor"
-            })
+                mensaje: "Error interno servidor",
+            });
         }
     };
-    
-    agregarEmpleados = async(req, res) => {
-        const { idOficina, empleados} = req.body;
-        if(!idOficina){
+
+    agregarEmpleados = async (req, res) => {
+        const { idOficina, empleados } = req.body;
+        if (!idOficina) {
             return res.status(400).send({
                 estado: "FAILED",
-                mensaje: "El valor de idOficina no puede ser vacio"
-            })
+                mensaje: "El valor de idOficina no puede ser vacio",
+            });
         }
 
-        if(empleados.length === 0){
+        if (empleados.length === 0) {
             return res.status(400).send({
                 estado: "FAILED",
-                mensaje: "No se cargaron empleados para agregar"
-            })
+                mensaje: "No se cargaron empleados para agregar",
+            });
         }
 
         try {
             const empleadosOficina = {
                 idOficina,
-                empleados
-            }
+                empleados,
+            };
             const agregaEmpleadosOficina = await oficinasService.agregarEmpleados(empleadosOficina);
-            if (agregaEmpleadosOficina.estado){
+            if (agregaEmpleadosOficina.estado) {
                 res.status(200).send({
-                    estado:"OK", 
-                    mensaje: agregaEmpleadosOficina.mensaje
+                    estado: "OK",
+                    mensaje: agregaEmpleadosOficina.mensaje,
                 });
-            }else{
+            } else {
                 res.status(404).send({
-                    estado:"FAILED", 
-                    mensaje: agregaEmpleadosOficina.mensaje
+                    estado: "FAILED",
+                    mensaje: agregaEmpleadosOficina.mensaje,
                 });
-            } 
+            }
         } catch (error) {
             console.log(error);
             res.status(500).send({
-                estado:"FAILED", mensaje: "Error interno en servidor."
+                estado: "FAILED",
+                mensaje: "Error interno en servidor.",
             });
         }
     };
 
-    quitarEmpleados = async(req, res) => {
-        const { idOficina, empleados} = req.body;
-        if(!idOficina){
+    quitarEmpleados = async (req, res) => {
+        const { idOficina, empleados } = req.body;
+        if (!idOficina) {
             return res.status(400).send({
                 estado: "FAILED",
-                mensaje: "El valor de idOficina no puede ser vacio"
-            })
+                mensaje: "El valor de idOficina no puede ser vacio",
+            });
         }
 
-        if(empleados.length === 0){
+        if (empleados.length === 0) {
             return res.status(400).send({
                 estado: "FAILED",
-                mensaje: "No se cargaron empleados para quitar"
-            })
+                mensaje: "No se cargaron empleados para quitar",
+            });
         }
 
         try {
             const empleadosOficina = {
                 idOficina,
-                empleados
-            }
+                empleados,
+            };
             const quitarEmpleadosOficina = await oficinasService.quitarEmpleados(empleadosOficina);
-            if (quitarEmpleadosOficina.estado){
+            if (quitarEmpleadosOficina.estado) {
                 res.status(200).send({
-                    estado:"OK", 
-                    mensaje: quitarEmpleadosOficina.mensaje
+                    estado: "OK",
+                    mensaje: quitarEmpleadosOficina.mensaje,
                 });
-            }else{
+            } else {
                 res.status(404).send({
-                    estado:"FAILED", 
-                    mensaje: quitarEmpleadosOficina.mensaje
+                    estado: "FAILED",
+                    mensaje: quitarEmpleadosOficina.mensaje,
                 });
-            } 
+            }
         } catch (error) {
             console.log(error);
             res.status(500).send({
-                estado:"FAILED", mensaje: "Error interno en servidor."
+                estado: "FAILED",
+                mensaje: "Error interno en servidor.",
             });
         }
-    }
+    };
 }

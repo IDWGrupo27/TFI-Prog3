@@ -6,9 +6,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ReclamosService from "../service/reclamosService.js";
 
-
-const usuariosService = new UsuariosService();
-
 //Envia el correo si el estado del reclamo es distinto al que se encuentra en la BBDD
 
 export const enviarCorreo = async (idReclamo, reclamoEstadoPrevio) => {
@@ -16,18 +13,13 @@ export const enviarCorreo = async (idReclamo, reclamoEstadoPrevio) => {
 
     const fileName = fileURLToPath(import.meta.url);
     const dirName = path.dirname(fileName);
-    const plantilla = fs.readFileSync(
-        path.join(dirName + "/handlebars/plantilla.hbs"),
-        "utf-8"
-    );
+    const plantilla = fs.readFileSync(path.join(dirName + "/handlebars/plantilla.hbs"), "utf-8");
 
     const reclamo = await reclamosService.getReclamoById(idReclamo);
 
-
     if (reclamoEstadoPrevio.estadoReclamo === reclamo.estadoReclamo) {
-        return
+        return;
     } else {
-
         let conseguirCorreo = reclamo.correoUsuarioCreador;
 
         const templete = handlebars.compile(plantilla);
@@ -63,8 +55,4 @@ export const enviarCorreo = async (idReclamo, reclamoEstadoPrevio) => {
             }
         });
     }
-
-
 };
-
-
