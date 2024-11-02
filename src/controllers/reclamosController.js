@@ -1,6 +1,5 @@
 import OficinasService from "../service/oficinasService.js";
 import ReclamosService from "../service/reclamosService.js";
-import { enviarCorreo } from "../utiles/correoElectronico.js";
 
 const reclamosService = new ReclamosService();
 const oficinasService = new OficinasService();

@@ -9,7 +9,7 @@ const reclamosTipoController = new ReclamosTipoController();
 
 reclamosTipo.get("/:idReclamosTipo", auth.isAdministrador, reclamosTipoController.getReclamosTipoById);
 reclamosTipo.patch("/:idReclamosTipo", auth.isAdministrador, reclamosTipoController.updateReclamosTipoById);
-reclamosTipo.delete("/:idReclamosTipo", auth.isAdministrador, reclamosTipoController.deleteReclamosTipoById);
+reclamosTipo.patch("/delete/:idReclamosTipo", auth.isAdministrador, reclamosTipoController.deleteReclamosTipoById);
 
 reclamosTipo.get("/", auth.isAdministrador, reclamosTipoController.getAllReclamosTipo);
 reclamosTipo.post("/", auth.isAdministrador, reclamosTipoController.createReclamosTipo);
