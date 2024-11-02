@@ -14,7 +14,6 @@ export default class UsuariosController {
 
         const usuario = await usuariosService.getUsuarioById(req.params.idUsuario);
         if (usuario) {
-            console.log(usuario.tipo)
             return res.send({
                 status: "OK",
                 usuario,

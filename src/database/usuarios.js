@@ -3,7 +3,7 @@ import { connection } from "./connection.js";
 export default class UsuariosDatabase {
     // Sentencias que se repiten en varias consultas
     sqlUsuarioColumns = "u.idUsuario, u.nombre, u.apellido, u.correoElectronico, u.activo, ut.descripcion AS tipo";
-    sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idUsuarioTipo";
+    sqlUsuarioJoinTipo = "INNER JOIN usuarios_tipo ut ON ut.idUsuarioTipo = u.idTipoUsuario";
 
     getUsuarioById = async (idUsuario) => {
         const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE u.idUsuario = ? AND u.activo = 1;`;
@@ -47,7 +47,7 @@ export default class UsuariosDatabase {
             ]);
             return result;
         } catch (e) {
-            console.log(e);
+            console.error(e);
             return null;
         }
     };

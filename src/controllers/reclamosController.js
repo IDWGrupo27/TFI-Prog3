@@ -13,7 +13,6 @@ export default class ReclamosController {
     /** Devuelve los reclamos del cliente logueado */
     getReclamosByPerfil = async (req, res) => {
         const reclamos = await reclamosService.getReclamosByIdCliente(req.perfil?.idUsuario);
-        console.log(reclamos);
         res.send({ status: "OK", reclamos });
     };
 
