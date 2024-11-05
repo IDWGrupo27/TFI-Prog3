@@ -1,6 +1,7 @@
 import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
 import { enviarCorreo } from "../utiles/correoElectronico.js";
+import { generarPdf, generarCsv } from "../utiles/generarInformes.js"
 
 
 const database = new ReclamosDatabase();
@@ -99,4 +100,50 @@ export default class ReclamosService {
             return null;
         }
     };
+
+    obtenerInforme = async (form) => {
+        try {
+            if (form === "pdf") {
+                const datos = await database.obtenerDatosPdf();
+
+                if (!datos || datos.length === 0) {
+                    return { mensaje: "No se encontraron datos" };
+                }
+
+                const pdf = await generarPdf(datos);
+
+                return {
+                    buffer: pdf,
+                    headers: {
+                        'Content-Type': 'application/pdf',
+                        'Content-Disposition': 'inline; filename="reclamos.pdf"'
+                    }
+                }
+
+
+            } else if (form === "csv") {
+                const datos = await database.obtenerDatosCsv();
+
+                if (!datos || datos.length === 0) {
+                    return { mensaje: "No se encontraron datos" };
+                }
+
+                const csv = await generarCsv(datos);
+                
+
+                return {
+                    path: csv,
+                    headers: {
+                        'Content-Type': 'text/csv',
+                        'Content-Disposition': 'attachment; filename="informe.csv"',
+                    }
+                };
+
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 }

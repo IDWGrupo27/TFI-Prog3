@@ -4,6 +4,8 @@ import ReclamosService from "../service/reclamosService.js";
 const reclamosService = new ReclamosService();
 const oficinasService = new OficinasService();
 
+const formatos = ["pdf", "csv"];
+
 export default class ReclamosController {
     getAllReclamos = async (req, res) => {
         const reclamos = await reclamosService.getAllReclamos();
@@ -213,4 +215,43 @@ export default class ReclamosController {
             });
         }
     };
+
+    obtenerInforme = async (req, res) => {
+        try {
+            const formato = req.query.formato;
+    
+            if (!formato || !formatos.includes(formato)) {
+                return res.status(400).send({
+                    mensaje: "El formato es incorrecto",
+                });
+            } 
+          
+            const {buffer, path, headers} = await reclamosService.obtenerInforme(formato);
+
+
+            res.set(headers)
+
+            if(formato === 'pdf'){
+                res.status(200).end(buffer);
+            } else if(formato === 'csv'){
+                res.status(200).download(path, (err) => {
+                    if(err){
+                        return res.status(500).send({
+                            mensaje: "No se pudo generar el csv",
+                        });
+                    }
+                    return
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                mensaje: "Error de servidor"
+            })
+        }
+
+
+    }
+
 }
