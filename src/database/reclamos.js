@@ -24,21 +24,22 @@ export default class ReclamosDatabase {
     };
 
     getReclamosByIdCliente = async (idCliente) => {
-        const sql = `SELECT ${this.sqlReclamoColumns} FROM reclamos r ${this.sqlReclamoJoinUsuarios} ${this.sqlReclamoJoinTipo} ${this.sqlReclamoJoinEstado} WHERE u.idUsuario = ?`;
+        console.log(idCliente)
+        const sql = `SELECT ${this.sqlReclamoColumns} 
+                        FROM reclamos r ${this.sqlReclamoJoinUsuarios} ${this.sqlReclamoJoinTipo} ${this.sqlReclamoJoinEstado} 
+                        WHERE u.idUsuario = ?`;
         const [reclamosCliente] = await connection.query(sql, [idCliente]);
         return reclamosCliente;
     };
 
     getReclamosByIdOficina = async (idOficina) => {
-        const [idReclamoTipoData] = await connection.query(
-            `SELECT idReclamoTipo FROM oficinas o WHERE o.idOficina = ?`,
-            [idOficina]
-        );
+        const sqlReclamoTipoData = `SELECT idReclamoTipo FROM oficinas o WHERE o.idOficina = ? AND o.activo = 1`;
+        const [idReclamoTipoData] = await connection.query(sqlReclamoTipoData, [idOficina]);
         if (!idReclamoTipoData[0]) return [];
         const { idReclamoTipo } = idReclamoTipoData[0];
 
-        const sql = `SELECT ${this.sqlReclamoColumns} FROM reclamos r ${this.sqlReclamoJoinUsuarios} ${this.sqlReclamoJoinTipo} ${this.sqlReclamoJoinEstado} WHERE r.idReclamoTipo = ?`;
-        const [reclamosOficina] = await connection.query(sql, [idReclamoTipo]);
+        const sqlReclamosOficina = `SELECT ${this.sqlReclamoColumns} FROM reclamos r ${this.sqlReclamoJoinUsuarios} ${this.sqlReclamoJoinTipo} ${this.sqlReclamoJoinEstado} WHERE r.idReclamoTipo = ?`;
+        const [reclamosOficina] = await connection.query(sqlReclamosOficina, [idReclamoTipo]);
         return reclamosOficina;
     };
 

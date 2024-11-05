@@ -5,6 +5,7 @@ const reclamosService = new ReclamosService();
 const oficinasService = new OficinasService();
 
 export default class ReclamosController {
+    
     getAllReclamos = async (req, res) => {
         const reclamos = await reclamosService.getAllReclamos();
         res.send({ status: "OK", reclamos });
@@ -12,7 +13,9 @@ export default class ReclamosController {
 
     /** Devuelve los reclamos del cliente logueado */
     getReclamosByPerfil = async (req, res) => {
-        const reclamos = await reclamosService.getReclamosByIdCliente(req.perfil?.idUsuario);
+        //const reclamos = await reclamosService.getReclamosByIdCliente(req.perfil?.idUsuario);
+        const reclamos = await reclamosService.getReclamosByIdCliente(req.user?.idUsuario);
+        console.log(reclamos)
         res.send({ status: "OK", reclamos });
     };
 
@@ -66,8 +69,9 @@ export default class ReclamosController {
                 message: "No se encontró el reclamo",
             });
         }
-
-        if (req.perfil?.tipo === "CLIENTE" && reclamo.idUsuarioCreador !== req.perfil?.idCliente) {
+    
+        //if (req.perfil?.tipo === "CLIENTE" && reclamo.idUsuarioCreador !== req.perfil?.idCliente) {
+        if (req.user?.tipo.toUpperCase() === "CLIENTE" && reclamo.idUsuarioCreador !== req.user?.idUsuario) {
             return res.status(403).send({
                 status: "FAILED",
                 message: "No tenés permiso para ver el reclamo",
@@ -81,7 +85,8 @@ export default class ReclamosController {
         const { body } = req;
         let fecha = new Date();
 
-        const idUsuarioCreador = req.perfil?.idUsuario;
+        //const idUsuarioCreador = req.perfil?.idUsuario;
+        const idUsuarioCreador = req.user?.idUsuario;
 
         if (!body.idReclamoTipo || !body.asunto || !body.descripcion) {
             return res.status(400).send({
@@ -157,16 +162,16 @@ export default class ReclamosController {
         var updateData = null;
 
         if (idReclamo && idReclamoEstado) {
-            if (req.perfil?.tipo === "CLIENTE") {
+            if (req.user?.tipo.toUpperCase() === "CLIENTE") {
                 const reclamo = await reclamosService.getReclamoById(idReclamo);
-                if (reclamo?.idUsuarioCreador === req.perfil?.idUsuario && idReclamoEstado === 3) {
+                if (reclamo?.idUsuarioCreador === req.user?.idUsuario && idReclamoEstado === 3) {
                     updateData = {
                         fechaCancelado: fecha,
                         idReclamoEstado,
                     };
                 }
-            } else if (req.perfil?.tipo === "EMPLEADO") {
-                const oficinaEmpleado = await oficinasService.getOficinaByIdUsuario(req.perfil?.idUsuario);
+            } else if (req.user?.tipo.toUpperCase() === "EMPLEADO") {
+                const oficinaEmpleado = await oficinasService.getOficinaByIdUsuario(req.user?.idUsuario);
                 const oficinaReclamo = await oficinasService.getOficinaByIdReclamo(idReclamo);
                 if (oficinaEmpleado?.idOficina === oficinaReclamo?.idOficina) {
                     updateData = {

@@ -5,6 +5,7 @@ import { enviarCorreo } from "../utiles/correoElectronico.js";
 const database = new ReclamosDatabase();
 
 export default class ReclamosService {
+    
     getReclamoById = async (idReclamo) => {
         try {
             const data = await database.getReclamoById(idReclamo);

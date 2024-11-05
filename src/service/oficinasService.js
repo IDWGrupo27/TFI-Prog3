@@ -10,6 +10,7 @@ const usuariosService = new UsuariosService();
 const tipoReclamo = new ReclamosTipoService();
 
 export default class OficinasService {
+    
     getOficinaById = async (idOficina) => {
         try {
             const oficinaData = await oficinasDatabase.getOficinaById(idOficina);

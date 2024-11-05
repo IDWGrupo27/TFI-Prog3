@@ -5,6 +5,7 @@ const oficinasService = new OficinasService();
 //const reclamoTipoService = new ReclamosTipoService();
 
 export default class OficinasController {
+    
     getOficinaById = async (req, res) => {
         if (!req.params.idOficina) {
             return res.status(400).send({

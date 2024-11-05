@@ -4,6 +4,7 @@ import UsuariosDatabase from "../database/usuarios.js";
 const usuariosDatabase = new UsuariosDatabase();
 
 export default class UsuariosService {
+    
     getUsuarioById = async (idUsuario, inactivo = false) => {
         try {
             const data = await usuariosDatabase.getUsuarioById(idUsuario, inactivo);
@@ -110,12 +111,18 @@ export default class UsuariosService {
      * @param {{ correoElectronico: string; contrasenia: string;}} dataLogin
      */
     loginUsuario = async (dataLogin) => {
+        //console.log(dataLogin)
         try {
             const dataUsuario = await usuariosDatabase.loginUsuario(dataLogin);
+            //console.log(dataUsuario)
             if (dataUsuario) return new Usuario(dataUsuario);
             else return null;
         } catch (error) {
             throw new Error(error);
         }
     };
+
+    findUsuario = async(correoElectronico, contrasenia) => {
+        return usuariosDatabase.findUsuario(correoElectronico, contrasenia);
+    }
 }

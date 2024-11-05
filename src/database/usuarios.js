@@ -45,7 +45,8 @@ export default class UsuariosDatabase {
     };
 
     createUsuario = async (usuarioData) => {
-        const sqlNewUsuario = `INSERT INTO usuarios (nombre, apellido, correoElectronico, contrasenia, idUsuarioTipo) VALUES (?, ?, ?, ?, ?)`;
+        const sqlNewUsuario = `INSERT INTO usuarios (nombre, apellido, correoElectronico, contrasenia, idUsuarioTipo) 
+                                VALUES (?, ?, ?, SHA2(?, 256), ?)`;
         const [result] = await connection.query(sqlNewUsuario, [
             usuarioData.nombre,
             usuarioData.apellido,
@@ -82,8 +83,11 @@ export default class UsuariosDatabase {
     };
 
     loginUsuario = async (data) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios ${this.sqlUsuarioJoinTipo} WHERE correoElectronico = ? AND contrasenia = ?;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} 
+                        FROM usuarios u ${this.sqlUsuarioJoinTipo} 
+                        WHERE correoElectronico = ? AND contrasenia = SHA2(?, 256) AND u.activo = 1;`;
         const [[usuario]] = await connection.query(sql, [data.correoElectronico, data.contrasenia]);
         return usuario ? usuario : null;
     };
+
 }

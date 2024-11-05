@@ -12,8 +12,10 @@ reclamos.post("/", auth.isCliente, reclamosController.createReclamo);
 
 reclamos.get("/mis-reclamos", auth.isCliente, reclamosController.getReclamosByPerfil);
 
-reclamos.get("/:idReclamo", auth.isAuthenticated, reclamosController.getReclamoById);
-reclamos.patch("/:idReclamo", auth.isAuthenticated, reclamosController.updateReclamo);
+//reclamos.get("/:idReclamo", auth.isAuthenticated, reclamosController.getReclamoById);
+//reclamos.patch("/:idReclamo", auth.isAuthenticated, reclamosController.updateReclamo);
+reclamos.get("/:idReclamo", reclamosController.getReclamoById);
+reclamos.patch("/:idReclamo", reclamosController.updateReclamo);
 reclamos.delete("/:idReclamo", auth.isAdministrador, reclamosController.deleteReclamoById);
 
 export default reclamos;

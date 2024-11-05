@@ -1,9 +1,11 @@
 import express from "express";
-const usuarios = express.Router();
-
 import AuthProfile from "../middleware/authProfile.js";
 import UsuariosController from "../controllers/usuariosController.js";
 import ReclamosController from "../controllers/reclamosController.js";
+import {check} from 'express-validator';
+import { validarCampos } from '../../src/middleware/validarCampos.js';
+
+const usuarios = express.Router();
 
 const usuariosController = new UsuariosController();
 const reclamosController = new ReclamosController();
@@ -11,7 +13,8 @@ const auth = new AuthProfile();
 
 usuarios.get("/", auth.isAdministrador, usuariosController.getAllUsuarios);
 
-usuarios.get("/mi-perfil", auth.isAuthenticated, usuariosController.getUsuarioByPerfil);
+//usuarios.get("/mi-perfil", auth.isAuthenticated, usuariosController.getUsuarioByPerfil);
+usuarios.get("/mi-perfil", usuariosController.getUsuarioByPerfil);
 usuarios.patch("/mi-perfil", auth.isCliente, usuariosController.updateClientePerfil);
 
 usuarios.get("/:idUsuario", auth.isAdministrador, usuariosController.getUsuario);
@@ -21,7 +24,7 @@ usuarios.get("/:idUsuario/reclamos", auth.isEmpleadoOrAdministrador, reclamosCon
 
 usuarios.post("/register", auth.isAdministrador, usuariosController.createUsuario);
 
-usuarios.post("/login", usuariosController.loginUsuario);
+//usuarios.post("/login", usuariosController.loginUsuario);
 
 usuarios.get("/empleados", auth.isAdministrador, usuariosController.getAllEmpleados);
 

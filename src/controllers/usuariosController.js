@@ -1,9 +1,14 @@
 import UsuariosService from "../service/usuariosService.js";
 import jwt from "jsonwebtoken";
+import passport from 'passport';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const usuariosService = new UsuariosService();
 
 export default class UsuariosController {
+    
     getUsuario = async (req, res) => {
         if (!req.params.idUsuario) {
             return res.status(400).send({
@@ -27,7 +32,7 @@ export default class UsuariosController {
     };
 
     getUsuarioByPerfil = async (req, res) => {
-        const usuario = await usuariosService.getUsuarioById(req.perfil?.idUsuario);
+        const usuario = await usuariosService.getUsuarioById(req.user?.idUsuario);
         if (usuario) {
             return res.send({
                 status: "OK",
@@ -147,14 +152,14 @@ export default class UsuariosController {
                 message: "Se requieren los campos opcionales a cambiar: {nombre, apellido, correoElectronico}",
             });
         }
-        const updatedUsuario = await usuariosService.updateUsuario(req.perfil?.idUsuario, updateObj);
+        const updatedUsuario = await usuariosService.updateUsuario(req.user?.idUsuario, updateObj);
         if (updatedUsuario) {
             return res.send({ status: "OK", usuario: updatedUsuario });
         }
         res.status(400).send({ status: "FAILED", message: "Error al actualizar la información del perfil" });
     };
 
-    loginUsuario = async (req, res) => {
+    /*loginUsuario = async (req, res) => {
         if (!req.body.correoElectronico || !req.body.contrasenia) {
             return res.status(400).send({
                 status: "FAILED",
@@ -192,5 +197,6 @@ export default class UsuariosController {
                 message: "Error del servidor",
             });
         }
-    };
+    };*/
+    
 }
