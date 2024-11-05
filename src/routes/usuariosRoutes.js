@@ -17,6 +17,8 @@ usuarios.get("/", auth.isAdministrador, usuariosController.getAllUsuarios);
 usuarios.get("/mi-perfil", usuariosController.getUsuarioByPerfil);
 usuarios.patch("/mi-perfil", auth.isCliente, usuariosController.updateClientePerfil);
 
+usuarios.get("/empleados", auth.isAdministrador, usuariosController.getAllEmpleados);
+
 usuarios.get("/:idUsuario", auth.isAdministrador, usuariosController.getUsuario);
 usuarios.patch("/:idUsuario", auth.isAdministrador, usuariosController.updateUsuario);
 
@@ -25,7 +27,5 @@ usuarios.get("/:idUsuario/reclamos", auth.isEmpleadoOrAdministrador, reclamosCon
 usuarios.post("/register", auth.isAdministrador, usuariosController.createUsuario);
 
 //usuarios.post("/login", usuariosController.loginUsuario);
-
-usuarios.get("/empleados", auth.isAdministrador, usuariosController.getAllEmpleados);
 
 export default usuarios;

@@ -10,6 +10,7 @@ const usuariosService = new UsuariosService();
 export default class UsuariosController {
     
     getUsuario = async (req, res) => {
+        console.log("getUsuarios()")
         if (!req.params.idUsuario) {
             return res.status(400).send({
                 status: "FAILED",
@@ -50,6 +51,7 @@ export default class UsuariosController {
     };
 
     getAllEmpleados = async (req, res) => {
+        console.log("getAllEmpleados()")
         const usuarios = await usuariosService.getUsuariosByIdTipoEmpleado(2);
         res.send({
             status: "OK",
@@ -141,7 +143,7 @@ export default class UsuariosController {
 
     updateClientePerfil = async (req, res) => {
         const updateObj = {};
-        const camposPermitidos = ["nombre", "apellido", "correoElectronico"];
+        const camposPermitidos = ["nombre", "apellido", "correoElectronico", "contrasenia"];
         camposPermitidos.forEach((key) => {
             if (req.body[key] !== undefined && req.body[key] !== null) {
                 updateObj[key] = req.body[key];
@@ -149,7 +151,7 @@ export default class UsuariosController {
         });
         if (!Object.keys(updateObj).length) {
             return res.status(400).send({
-                message: "Se requieren los campos opcionales a cambiar: {nombre, apellido, correoElectronico}",
+                message: "Se requieren los campos opcionales a cambiar: {nombre, apellido, correoElectronico, contrasenia}",
             });
         }
         const updatedUsuario = await usuariosService.updateUsuario(req.user?.idUsuario, updateObj);

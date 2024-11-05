@@ -6,7 +6,6 @@ import AuthController from '../controllers/authController.js';
 
 const router = express.Router();
 const authController = new AuthController();
-//const usuariosController = new UsuariosController();
 
 router.post('/login', 
     [
@@ -15,7 +14,7 @@ router.post('/login',
         check('contrasenia', 'La contrasenia es requerida!').not().isEmpty(),
         validarCampos
     ], 
-    authController.loginUsuario);
-    //usuariosController.loginUsuario);
+    authController.loginUsuario
+);
 
 export default router;

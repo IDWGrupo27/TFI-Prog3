@@ -33,6 +33,7 @@ export default class UsuariosService {
     getAllUsuarios = async () => {
         try {
             const data = await usuariosDatabase.getAllUsuarios();
+            console.log(data)
             return data.map((u) => new Usuario(u));
         } catch (error) {
             console.error(error);

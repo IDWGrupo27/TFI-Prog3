@@ -33,7 +33,8 @@ export default class UsuariosDatabase {
     };
 
     getUsuariosByIdTipoEmpleado = async (idTipoEmpleado) => {
-        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} WHERE idUsuarioTipo = ? AND u.activo = 1;`;
+        const sql = `SELECT ${this.sqlUsuarioColumns} FROM usuarios u ${this.sqlUsuarioJoinTipo} 
+                        WHERE u.idUsuarioTipo = ? AND u.activo = 1;`;
         const [usuarios] = await connection.query(sql, [idTipoEmpleado]);
         return usuarios;
     };
@@ -52,7 +53,7 @@ export default class UsuariosDatabase {
             usuarioData.apellido,
             usuarioData.correoElectronico,
             usuarioData.contrasenia,
-            usuarioData.idUsuarioTipo,
+            usuarioData.idTipoUsuario,
         ]);
         return result;
     };
@@ -62,11 +63,15 @@ export default class UsuariosDatabase {
         const updates = [];
         const values = [];
         for (const [key, value] of Object.entries(campos)) {
-            updates.push(`${key} = ?`);
+            if(key === 'contrasenia'){
+                updates.push(`${key} = SHA2(?, 256)`);
+            } else {
+                updates.push(`${key} = ?`);
+            }
             values.push(value);
         }
         sqlUpdate += updates.join(", ");
-        sqlUpdate += " WHERE idUsuario = ?";
+        sqlUpdate += " WHERE idUsuario = ? AND activo = 1";
         values.push(idUsuario);
         const [result] = await connection.query(sqlUpdate, values);
         return result;

@@ -2,6 +2,9 @@
 
 ## Endpoints de la API
 
+### Inicio Sesion
+`POST /inicio-sesion/login` - Devuelve permisos para el ingreso y validaciones para las diferentes rutas
+
 ### Usuarios
 
 `GET /api/usuarios` - Devuevle todos los usuarios
@@ -12,11 +15,9 @@
 
 `GET /api/usuarios/:idUsuario` - Busca un usuario por ID
 
-`PATCH /api/usuarios/:idUsuario` - Actualiza la información de un usuario: nombre, apellido, correoElectronico, activo, idUsuarioTipo
+`PATCH /api/usuarios/:idUsuario` - Actualiza la información de un usuario: nombre, apellido, correoElectronico, activo,    idUsuarioTipo
 
 `GET /api/usuarios/:idUsuario/reclamos` - Devuevle todos los reclamos del usuario
-
-`POST /api/usuarios/login` - Devuelve un token bearer JWT si coincide el usuario y contraseña
 
 `POST /api/usuarios/register` - Crea un usuario
 
