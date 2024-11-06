@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclamos.pdf</title>
+    <style>
+        *{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+        }
+
+        h1 {
+
+            width: 100%;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        p {
+            font-size: 30px;
+            padding: 10px;
+        }
+
+        div {
+            height: 100px;
+            border: 1px solid black;
+            -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+            -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+            box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.75);
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><b>Estadisticas de reclamos</b></h1>
+    <div>
+        <p><b>Cantidad de reclamos:</b> {{reclamosTotales}}</p>
+    </div>
+    <div>
+        <p><b>Reclamos finalizados:</b> {{reclamosFinalizados}}</p>
+    </div>
+    <div>
+        <p><b>Reclamos no finalizados:</b> {{reclamosNoFinalizados}}</p>
+    </div>
+    <div>
+        <p><b>Tipo de reclamo mas frecuente: {{descripcionTipoReclamoFrecuente}}</b></p>
+    </div>
+    <div>
+        <p><b>Cantidad del reclamo más frecuente: {{cantidadTipoReclamoFrecuente}}</b></p>
+    </div>
+</body>
+
+</html>

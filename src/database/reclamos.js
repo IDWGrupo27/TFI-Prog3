@@ -77,4 +77,41 @@ export default class ReclamosDatabase {
         const [result] = await connection.query(sqlActualizar);
         return result;
     };
+
+    getDatosPdf = async () => {
+        const sqlDatos = 'CALL datosPDF()';
+        const [result] = await connection.query(sqlDatos);
+
+        const datos = {
+            reclamosTotales: result[0][0].reclamosTotales,
+            reclamosNoFinalizados: result[0][0].reclamosNoFinalizados,
+            reclamosFinalizados: result[0][0].reclamosFinalizados,
+            descripcionTipoReclamoFrecuente: result[0][0].descripcionTipoReclamoFrecuente,
+            cantidadTipoReclamoFrecuente: result[0][0].cantidadTipoReclamoFrecuente
+        }
+        return datos;
+    }
+
+    getDatosCsv = async () => {
+        const sqlDatos = `SELECT r.idReclamo AS 'reclamo', r.asunto AS 'asunto', r.fechaCreado AS 'fechaCreado',
+         u.nombre AS 'nombreUsuario', u.apellido AS 'apellidoUsuario', re.descripcion 'estado' FROM reclamos AS r
+         INNER JOIN usuarios AS u ON r.idUsuarioCreador = u.idUsuario
+         INNER JOIN reclamos_estado AS re ON r.idReclamoEstado = re.idReclamosEstado 
+         ORDER BY r.idReclamo ASC;`;
+
+        const [result] = await connection.query(sqlDatos);
+        return result
+    }
+
+    getEstadistica = async () =>{
+        const sql = 'CALL estadistica()';
+        const [result] = await connection.query(sql);
+
+        const datos = {
+            reclamosNoFinalizados: result[0][0].reclamosNoFinalizados,
+            tablaEstadistica: result[1],
+        }
+        return datos
+    }
+    
 }
