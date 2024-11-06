@@ -84,6 +84,21 @@ export default class UsuariosService {
         }
     };
 
+    updatePerfilUsuario = async (idUsuario, datos) => {
+
+        const existe = await usuariosDatabase.getUsuarioById(idUsuario);
+        if (existe === null) {
+            return {estado: false, mensaje: 'idUsuario no existe'};
+        }    
+
+        const mod = await usuariosDatabase.updatePerfilUsuario(idUsuario, datos);
+        if (mod){
+            return {estado: true, mensaje: 'Usuario modificado'};
+        }else{
+            return {estado: false, mensaje: 'Usuario no modificado'};
+        }
+    }
+
     updateUsuario = async (idUsuario, fields) => {
         try {
             const result = await usuariosDatabase.updateUsuario(idUsuario, fields);
@@ -96,6 +111,7 @@ export default class UsuariosService {
             return null;
         }
     };
+   
 
     updateUsuariosOficinasActivo = async (idUsuario, activo) => {
         try {

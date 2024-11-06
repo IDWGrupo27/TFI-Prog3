@@ -64,11 +64,6 @@ export default class ReclamosDatabase {
         return result;
     };
 
-    deleteReclamoById = async (idReclamo) => {
-        const sql = `DELETE FROM reclamos WHERE idReclamo = ?;`;
-        const [data] = await connection.query(sql, [idReclamo]);
-        return data;
-    };
 
     updateReclamo = async (idReclamo, { fechaFinalizado = null, fechaCancelado = null, idReclamoEstado }) => {
         const sqlFechaFinalizado = fechaFinalizado

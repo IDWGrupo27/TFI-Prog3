@@ -77,6 +77,17 @@ export default class UsuariosDatabase {
         return result;
     };
 
+    updatePerfilUsuario = async (idUsuario, datos) => {
+        const sql = `UPDATE usuarios SET ? WHERE idUsuario = ?;`;
+        const [result] = await connection.query(sql, [datos, idUsuario]);
+        
+        if (result.affectedRows === 0) {
+            return false;
+        }
+        
+        return true;
+    }
+
     constructor() {
         this.updateUsuario(14, { nombre: "pedro", apellido: "galati" });
     }

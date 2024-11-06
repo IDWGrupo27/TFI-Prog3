@@ -89,13 +89,4 @@ export default class ReclamosService {
         }
     };
 
-    deleteReclamoById = async (idReclamo) => {
-        try {
-            const data = await database.deleteReclamoById(idReclamo);
-            return data;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    };
 }

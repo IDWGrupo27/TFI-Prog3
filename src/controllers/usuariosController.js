@@ -131,6 +131,7 @@ export default class UsuariosController {
         }
 
         const updatedUsuario = await usuariosService.updateUsuario(req.params.idUsuario, updateObj);
+
         if (updatedUsuario) {
             if (updatedUsuario.tipo.toUpperCase() === "EMPLEADO") {
                 await usuariosService.updateUsuariosOficinasActivo(updatedUsuario.idUsuario, 0);
@@ -142,63 +143,40 @@ export default class UsuariosController {
     };
 
     updateClientePerfil = async (req, res) => {
-        const updateObj = {};
-        const camposPermitidos = ["nombre", "apellido", "correoElectronico", "contrasenia"];
-        camposPermitidos.forEach((key) => {
-            if (req.body[key] !== undefined && req.body[key] !== null) {
-                updateObj[key] = req.body[key];
-            }
-        });
-        if (!Object.keys(updateObj).length) {
-            return res.status(400).send({
-                message: "Se requieren los campos opcionales a cambiar: {nombre, apellido, correoElectronico, contrasenia}",
-            });
-        }
-        const updatedUsuario = await usuariosService.updateUsuario(req.user?.idUsuario, updateObj);
-        if (updatedUsuario) {
-            return res.send({ status: "OK", usuario: updatedUsuario });
-        }
-        res.status(400).send({ status: "FAILED", message: "Error al actualizar la información del perfil" });
-    };
+        try{
+            const idUsuario = req.user.idUsuario;
 
-    /*loginUsuario = async (req, res) => {
-        if (!req.body.correoElectronico || !req.body.contrasenia) {
-            return res.status(400).send({
-                status: "FAILED",
-                message: "Se requiere 'correoElectronico' y 'contrasenia', ",
-            });
-        }
-        try {
-            const usuario = await usuariosService.loginUsuario({
-                correoElectronico: req.body.correoElectronico,
-                contrasenia: req.body.contrasenia,
-            });
-            if (usuario) {
-                const token = jwt.sign(
-                    {
-                        idUsuario: usuario.idUsuario,
-                        correoElectronico: usuario.correoElectronico,
-                        tipo: usuario.tipo,
-                    },
-                    process.env.TOKEN_SECRET,
-                    {
-                        expiresIn: "2h",
-                    }
-                );
-                res.send({ status: "OK", usuario, token });
-            } else {
-                res.status(403).send({
-                    status: "FAILED",
-                    message: "Usuario o contraseña incorrectos",
+            if(idUsuario === undefined ){
+                return res.status(400).send({
+                    estado:"Falla",
+                    mensaje: "Faltan datos obligatorios."    
+                })
+            }
+
+            const imagen  = req.file ? req.file.filename : null;            
+            const datos = { ...req.body, imagen}; 
+
+            if (Object.keys(datos).length === 0) {
+                return res.status(400).send({
+                    estado:"Falla",
+                    mensaje: "No se enviaron datos para ser modificados."    
                 });
             }
-        } catch (error) {
-            console.error(err);
+
+            const usuarioModificado = await usuariosService.updatePerfilUsuario(idUsuario, datos);
+            
+            if (usuarioModificado.estado){
+                res.status(200).send({estado:"OK", mensaje: usuarioModificado.mensaje});
+            }else{
+                res.status(404).send({estado:"Falla", mensaje: usuarioModificado.mensaje});
+            }
+
+        }catch (error){
+            console.log(error)
             res.status(500).send({
-                status: "FAILED",
-                message: "Error del servidor",
+                estado:"Falla", mensaje: "Error interno en servidor."
             });
         }
-    };*/
-    
+    }
+
 }
