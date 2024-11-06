@@ -7,8 +7,8 @@ import ReclamosController from "../controllers/reclamosController.js";
 const auth = new AuthProfile();
 const reclamosController = new ReclamosController();
 
-reclamos.get("/informes", reclamosController.getInforme);
-reclamos.get("/estadistica", reclamosController.getEstadistica);
+reclamos.get("/informes", auth.isAdministrador, reclamosController.getInforme);
+reclamos.get("/estadistica", auth.isAdministrador, reclamosController.getEstadistica);
 
 reclamos.get("/", auth.isEmpleadoOrAdministrador, reclamosController.getAllReclamos);
 reclamos.post("/", auth.isCliente, reclamosController.createReclamo);
