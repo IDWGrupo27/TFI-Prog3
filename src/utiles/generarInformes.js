@@ -43,10 +43,8 @@ export const generarCsv = async (datos) => {
     try {
         const fileName = fileURLToPath(import.meta.url);
         const dirName = path.dirname(fileName);
-        
-        let archivo = path.resolve(dirName, '..');
-        archivo = path.join(archivo + "/utiles/informe.csv");        
 
+        let archivo = path.join(dirName + "/informe.csv");
 
         const csv = createObjectCsvWriter({
             path: archivo,
@@ -69,4 +67,45 @@ export const generarCsv = async (datos) => {
         console.log(error)
         throw error;
     }
+}
+
+export const generarEstadistica = async (datos) => {
+    try {
+        const fileName = fileURLToPath(import.meta.url);
+        const dirName = path.dirname(fileName);
+
+        let archivo = path.join(dirName + "/estadistica.csv");
+
+
+        const { reclamosNoFinalizados, tablaEstadistica } = datos;
+
+
+        const datosFinales = tablaEstadistica.map(e => {
+            const obj = { ...e, reclamosNoFinalizados };
+            return obj
+        });
+
+
+        const csv = createObjectCsvWriter({
+            path: archivo,
+            header: [
+                { id: 'reclamosNoFinalizados', title: 'Reclamos no finalizados' },
+                { id: 'descripcion', title: 'Descripcion del reclamo tipo' },
+                { id: 'idReclamosTipo', title: 'ID tipos de reclamos' },
+                { id: 'cantidadCadaReclamo', title: 'Cantidad de cada tipo de reclamo' },
+                { id: 'porcentajeCadaReclamo', title: 'Porcentaje de cada tipo de reclamo' }
+            ],
+            encoding: "utf-8"
+        });
+
+        await csv.writeRecords(datosFinales);
+
+        return archivo
+
+
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+
 }

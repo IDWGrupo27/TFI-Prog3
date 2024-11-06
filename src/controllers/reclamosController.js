@@ -216,26 +216,26 @@ export default class ReclamosController {
         }
     };
 
-    obtenerInforme = async (req, res) => {
+    getInforme = async (req, res) => {
         try {
             const formato = req.query.formato;
-    
+
             if (!formato || !formatos.includes(formato)) {
                 return res.status(400).send({
                     mensaje: "El formato es incorrecto",
                 });
-            } 
-          
-            const {buffer, path, headers} = await reclamosService.obtenerInforme(formato);
+            }
+
+            const { buffer, path, headers } = await reclamosService.getInforme(formato);
 
 
             res.set(headers)
 
-            if(formato === 'pdf'){
+            if (formato === 'pdf') {
                 res.status(200).end(buffer);
-            } else if(formato === 'csv'){
+            } else if (formato === 'csv') {
                 res.status(200).download(path, (err) => {
-                    if(err){
+                    if (err) {
                         return res.status(500).send({
                             mensaje: "No se pudo generar el csv",
                         });
@@ -249,6 +249,37 @@ export default class ReclamosController {
             res.status(500).send({
                 mensaje: "Error de servidor"
             })
+        }
+
+
+    }
+
+    getEstadistica = async (req, res) => {
+        try {
+            const { buffer, path, headers } = await reclamosService.getEstadistica();
+
+            if (!path || path === null) {
+                return res.status(400).send({
+                    mensaje: "No se obtuvo el archivo"
+                });
+            }
+
+            res.set(headers);
+
+            res.status(200).download(path, (err) => {
+                if (err) {
+                    res.status(500).send({
+                        mensaje: "Error del servidor"
+                    })
+                }
+                return
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                mensaje: "Error de servidor"
+            });
         }
 
 

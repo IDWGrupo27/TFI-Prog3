@@ -1,7 +1,7 @@
 import { Reclamo } from "../model/model.js";
 import ReclamosDatabase from "../database/reclamos.js";
 import { enviarCorreo } from "../utiles/correoElectronico.js";
-import { generarPdf, generarCsv } from "../utiles/generarInformes.js"
+import { generarPdf, generarCsv, generarEstadistica } from "../utiles/generarInformes.js"
 
 
 const database = new ReclamosDatabase();
@@ -101,10 +101,10 @@ export default class ReclamosService {
         }
     };
 
-    obtenerInforme = async (form) => {
+    getInforme = async (form) => {
         try {
             if (form === "pdf") {
-                const datos = await database.obtenerDatosPdf();
+                const datos = await database.getDatosPdf();
 
                 if (!datos || datos.length === 0) {
                     return { mensaje: "No se encontraron datos" };
@@ -122,14 +122,14 @@ export default class ReclamosService {
 
 
             } else if (form === "csv") {
-                const datos = await database.obtenerDatosCsv();
+                const datos = await database.getDatosCsv();
 
                 if (!datos || datos.length === 0) {
                     return { mensaje: "No se encontraron datos" };
                 }
 
                 const csv = await generarCsv(datos);
-                
+
 
                 return {
                     path: csv,
@@ -144,6 +144,33 @@ export default class ReclamosService {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    getEstadistica = async () => {
+        try {
+            const datos = await database.getEstadistica();
+
+            if (!datos || datos.length === 0) {
+                return { mensaje: "No se encontraron datos" };
+            }
+
+            const estadistica = await generarEstadistica(datos);
+
+            if (!estadistica) {
+                return null
+            }
+
+            return {
+                path: estadistica,
+                headers: {
+                    'Content-Type': 'text/csv',
+                    'Content-Disposition': 'attachment; filename="estadistica.csv"',
+                }
+            };
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
 }

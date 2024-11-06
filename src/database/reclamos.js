@@ -82,7 +82,7 @@ export default class ReclamosDatabase {
         return result;
     };
 
-    obtenerDatosPdf = async () => {
+    getDatosPdf = async () => {
         const sqlDatos = 'CALL datosPDF()';
         const [result] = await connection.query(sqlDatos);
 
@@ -96,7 +96,7 @@ export default class ReclamosDatabase {
         return datos;
     }
 
-    obtenerDatosCsv = async () => {
+    getDatosCsv = async () => {
         const sqlDatos = `SELECT r.idReclamo AS 'reclamo', r.asunto AS 'asunto', r.fechaCreado AS 'fechaCreado',
          u.nombre AS 'nombreUsuario', u.apellido AS 'apellidoUsuario', re.descripcion 'estado' FROM reclamos AS r
          INNER JOIN usuarios AS u ON r.idUsuarioCreador = u.idUsuario
@@ -106,4 +106,16 @@ export default class ReclamosDatabase {
         const [result] = await connection.query(sqlDatos);
         return result
     }
+
+    getEstadistica = async () =>{
+        const sql = 'CALL estadistica()';
+        const [result] = await connection.query(sql);
+
+        const datos = {
+            reclamosNoFinalizados: result[0][0].reclamosNoFinalizados,
+            tablaEstadistica: result[1],
+        }
+        return datos
+    }
+    
 }
