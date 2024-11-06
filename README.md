@@ -23,6 +23,10 @@
 
 ### Reclamos
 
+`GET /api/reclamos/informes` - Informe sobre reclamos
+
+`GET /api/reclamos/estadistica` - Informe estadistica sobre reclamos
+
 `GET /api/reclamos` - Devuevle todos los reclamos
 
 `POST /api/reclamos` - Crea un nuevo reclamo
