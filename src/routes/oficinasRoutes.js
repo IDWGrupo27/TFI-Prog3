@@ -9,7 +9,6 @@ const oficinasController = new OficinasController();
 const reclamosController = new ReclamosController();
 const auth = new AuthProfile();
 
-// deberia ser Administrador
 oficinas.get("/", auth.isAdministrador, oficinasController.getAllOficinas);
 oficinas.get("/:idOficina", auth.isAdministrador, oficinasController.getOficinaById);
 oficinas.post("/", auth.isAdministrador, oficinasController.createOficina);
